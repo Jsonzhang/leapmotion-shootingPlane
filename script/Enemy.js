@@ -1,61 +1,60 @@
 			//新建飞机行为对象
 			
 			
-			//-----------用于飞行的对象-------------------
-			//写一个构造方法
-			var EnemyFly=function(){
-				//用于记录时间的成员属性
-				this.lastEnemyFlyTime=0;
-			}
-			//在圆形中写入方法
-			EnemyFly.prototype={
-				execute:function(sprite,context,time){
-					//检测动画是否开始运行(时间)
-					if(this.lastEnemyFlyTime!==0){
-						//更新飞机的位置 top坐标
-						sprite.top=sprite.top+sprite.moveY/1000*(time-this.lastEnemyFlyTime);
-						
-						//判断当前飞机的位置是否飞出屏幕，如果已经离开屏幕  隐藏
-						if(sprite.top>context.canvas.height){
-							sprite.visible=false;
-						}	
-						
-					}
-					//记录每次动画的最后一次时间
-					this.lastEnemyFlyTime=time;
-					
-				}
+//-----------用于飞行的对象-------------------
+//写一个构造方法
+var EnemyFly=function(){
+	//用于记录时间的成员属性
+	this.lastEnemyFlyTime=0;
+}
+//在圆形中写入方法
+EnemyFly.prototype={
+	execute:function(sprite,context,time){
+		//检测动画是否开始运行(时间)
+		if(this.lastEnemyFlyTime!==0){
+			//更新飞机的位置 top坐标
+			sprite.top=sprite.top+sprite.moveY/1000*(time-this.lastEnemyFlyTime);
 			
-			}
-			
-			
-			//---------------用于爆炸的行为对象------------------------
+			//判断当前飞机的位置是否飞出屏幕，如果已经离开屏幕  隐藏
+			if(sprite.top>context.canvas.height){
+				sprite.visible=false;
+			}	
+		}
+		//记录每次动画的最后一次时间
+		this.lastEnemyFlyTime=time;
 		
-			//构造方法
-			var EnemyBomb=function(){
-				//记录最后一次时间
-				this.lastEnemyBombTime=0;
-				//每一个画面的时间
-				this.cycle=300;
+	}
+
+}
+
+
+//---------------用于爆炸的行为对象------------------------
+
+//构造方法
+var EnemyBomb=function(){
+	//记录最后一次时间
+	this.lastEnemyBombTime=0;
+	//每一个画面的时间
+	this.cycle=300;
+}
+
+//对象圆形
+EnemyBomb.prototype={
+	execute:function(sprite,context,time){
+		//轮播每一个图片
+		if(time-this.lastEnemyBombTime>this.cycle && sprite.hp==0){
+			//更新当前绘图使用的图片
+			
+			sprite.painter.advance();
+			//判断 如果当前飞机死亡hp=0 且爆炸效果播放完毕 删除该飞机
+			if(sprite.painter.cellIndex==sprite.painter.cells.length-1){
+				sprite.visible=false;
 			}
-		
-			//对象圆形
-			EnemyBomb.prototype={
-				execute:function(sprite,context,time){
-					//轮播每一个图片
-					if(time-this.lastEnemyBombTime>this.cycle && sprite.hp==0){
-						//更新当前绘图使用的图片
-						
-						sprite.painter.advance();
-						//判断 如果当前飞机死亡hp=0 且爆炸效果播放完毕 删除该飞机
-						if(sprite.painter.cellIndex==sprite.painter.cells.length-1){
-							sprite.visible=false;
-						}
-						//重新记录最后一次执行时间
-						this.lastEnemyBombTime=time;
-					}
-				
-				}
+			//重新记录最后一次执行时间
+			this.lastEnemyBombTime=time;
+		}
+	
+	}
 			
 			
 			}
@@ -98,8 +97,6 @@
 						{x:322,y:340,w:110,h:170},										
 						{x:322,y:510,w:110,h:170},									
 						{x:322,y:0,w:110,h:170}
-							
-						
 					];
 					
 				//大飞机的配置
@@ -126,7 +123,7 @@
 				Enemy.moveY=option.moveY;
 				Enemy.hp=option.hp;//气血属性
 				Enemy.score=option.score;//积分属性
-				
+				Enemy.destroying = false;
 				//返回精灵对象
 				return Enemy;
 			}

@@ -2,23 +2,31 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>我们一起打飞机</title>
+		<title></title>
 		<style>
 			canvas{border:1px solid #000;}
 			body{text-align:center}
 		</style>
-		<script src="script/requestNextAnimationFrame.js"></script>
 		<script src="script/windowTocanvas.js"></script>
 		<script src="script/bgSprite.js"></script>
 		<script src="script/Sprite.js"></script>
 		<script src="script/Enemy.js"></script>
 		<script src="script/plane.js"></script>
 		<script src="script/Bullet.js"></script>
+
+		<script src="script/leap.min.js"></script>
+	  
 	</head>
 	<body>
 		<canvas id="canvas" width="320" height="568">浏览器不支持</canvas>
-		<script>
-			//获取绘图环境
+		 <script>
+	      var pausedFrame = null;
+	      var latestFrame = null;
+	      
+	      
+
+
+
 			var canvas=document.getElementById('canvas');
 			var context=canvas.getContext('2d');
 			
@@ -41,23 +49,29 @@
 			var score=0;
 			
 			
-			//鼠标移动事件
-			canvas.onmousemove=function(e){
-					//事件统一
-					e=e||window.event;
-					//获取当前鼠标相对于canvas的坐标
-					var ponit=windowToCanvas(this,e.clientX,e.clientY);
-					//重新设置我方飞机的坐标点
-					
-					plane.left=ponit.x-plane.width/2;
-					plane.top=ponit.y-plane.height/2;
-				
-			}
+			var controller = new Leap.Controller({enableGestures: true});
+		      controller.loop(function(frame) {
+		        latestFrame = frame;
+
+
+		        if(latestFrame.pointables[0]){
+		        		point = {
+		        			x : (latestFrame.pointables[0].tipPosition[0] + 350) * canvas.width / 700,
+		        			y : (700 - latestFrame.pointables[0].tipPosition[1]) * canvas.height / 700
+		        		}
+		        			
+						plane.left=point.x-plane.width/2;
+						plane.top=point.y-plane.height/2;
+		        }
+
+
+
+		      });
 			
-			
+
 			
 			function animate(time){
-			
+
 				//添加飞机操作
 				//小飞机添加
 				if(time-smallEnemyTime>1500){
@@ -88,7 +102,7 @@
 				}
 				
 				//添加子弹
-				if(time-bulletTime>150){
+				if(time-bulletTime>200){
 					sprites.push(createBullet(plane.left+plane.width/2,plane.top-15));
 					bulletTime=time;
 				}
@@ -168,8 +182,8 @@
 								}
 
 								if( leftvalue && topvalue){
-									sprites[i].hp -= 1 ;
-									sprites[i].update();
+									sprites[i].hp = 0 ;
+									// return false;
 								}
 							}
 						}
@@ -179,19 +193,14 @@
 				
 				
 				context.font='26px microsoft ';
-				//检测当前页面对象个数
-				// context.fillText('对象个数:'+sprites.length,150,540);
-				//分数统计
 				context.fillText('总分:'+score,170,30);
-				// context.fillText('FPS：'+countFps(),10,30);
 				
 				//帧率计算
 				//再次调用绘制动画方法
-				window.requestNextAnimationFrame(animate);
+				window.requestAnimationFrame(animate);
 			}
 			
-			window.requestNextAnimationFrame(animate);
-			
+			window.requestAnimationFrame(animate);
 			
 		</script>
 	</body>

@@ -52,50 +52,50 @@ Sprite.prototype={
 
 
 //创建一个精灵绘制器   (描边和填充绘制器 (简单动画) 图像绘制器（背景）)
-			//构造方法（该对象的成员属性）
-			/**
-				url 当前精灵使用的图片
-				cells  
-			*/
-			/*cells=[
-				{x:11,y:1,w:1,h:1},
-				{x:12,y:1,w:1,h:1},
-				{x:21,y:1,w:1,h:1},
-				{x:12,y:1,w:1,h:1}
-				]
-			
-			*/
-			var SpritePainter=function(url,cells){
-				//加载图片
-				this.img=new Image();//图片属性对象
-				this.img.src=url;//为当前图片的路径
-				
-				this.cells=cells || [] ;//传入的图像坐标数组(所有图片信息)
-				this.cellIndex=0;//当前绘图对象使用的图片信息
-			}
-			//讲当前对象的方法打入原型当中
-			SpritePainter.prototype={
-				//更新使用的图片（下标）
-				advance:function(){
-					if(this.cellIndex==this.cells.length-1){
-						//还原图片设置 从第一张图开始使用
-						this.cellIndex=0;
-					}else{
-						//更新图片索引，没有到达最后一张图 索引+1
-						this.cellIndex++;
-					}
-				},
-				//图像绘制方法
-				paint:function(sprite,context){
-					//保证在图片加载完毕的情况下绘制图片
-					if(this.img.complete){
-						//获取当前绘制使用的图片信息
-						var cell=this.cells[this.cellIndex];
-						//使用图像信息数组中的某个图片绘制到canvas中
-						context.drawImage(this.img,cell.x,cell.y,cell.w,cell.h,sprite.left,sprite.top,cell.w,cell.h);
-					}
-				}
-			}
+//构造方法（该对象的成员属性）
+/**
+	url 当前精灵使用的图片
+	cells  
+*/
+/*cells=[
+	{x:11,y:1,w:1,h:1},
+	{x:12,y:1,w:1,h:1},
+	{x:21,y:1,w:1,h:1},
+	{x:12,y:1,w:1,h:1}
+	]
+
+*/
+var SpritePainter=function(url,cells){
+	//加载图片
+	this.img=new Image();//图片属性对象
+	this.img.src=url;//为当前图片的路径
+	
+	this.cells=cells || [] ;//传入的图像坐标数组(所有图片信息)
+	this.cellIndex=0;//当前绘图对象使用的图片信息
+}
+//讲当前对象的方法打入原型当中
+SpritePainter.prototype={
+	//更新使用的图片（下标）
+	advance:function(){
+		if(this.cellIndex==this.cells.length-1){
+			//还原图片设置 从第一张图开始使用
+			this.cellIndex=0;
+		}else{
+			//更新图片索引，没有到达最后一张图 索引+1
+			this.cellIndex++;
+		}
+	},
+	//图像绘制方法
+	paint:function(sprite,context){
+		//保证在图片加载完毕的情况下绘制图片
+		if(this.img.complete){
+			//获取当前绘制使用的图片信息
+			var cell=this.cells[this.cellIndex];
+			//使用图像信息数组中的某个图片绘制到canvas中
+			context.drawImage(this.img,cell.x,cell.y,cell.w,cell.h,sprite.left,sprite.top,cell.w,cell.h);
+		}
+	}
+}
 
 
 
