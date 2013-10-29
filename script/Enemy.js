@@ -85,7 +85,7 @@
 						{x:432,y:478,w:46,h:59}
 					];
 				//中飞机的配置
-				var middleOption={w:46,h:63,moveY:80+Math.floor(Math.random()*100),hp:2,score:1000}
+				var middleOption={w:46,h:63,moveY:80+Math.floor(Math.random()*100),hp:10,score:1000}
 				
 				//大飞机的信息
 				var bigCells=[
@@ -103,7 +103,7 @@
 					];
 					
 				//大飞机的配置
-				var bigOption={w:110,h:170,moveY:70+Math.floor(Math.random()*70),hp:3,score:2000}
+				var bigOption={w:110,h:170,moveY:70+Math.floor(Math.random()*70),hp:20,score:2000}
 					
 				//判断飞机使用的图片对象集合
 				if(name=='smallEnemy'){
@@ -122,7 +122,7 @@
 				Enemy.left=Math.floor(Math.random()*320)-Enemy.width;
 				Enemy.top=-option.h;
 				Enemy.width=option.w;
-				Enemy.hight=option.h;
+				Enemy.height=option.h;
 				Enemy.moveY=option.moveY;
 				Enemy.hp=option.hp;//气血属性
 				Enemy.score=option.score;//积分属性
