@@ -148,17 +148,28 @@
 							}
 						}
 					}
+					var leftvalue,topvalue;
 					if(sprites[i].name=='plane'){
 						for(j=0;j<sprites.length;j++){
 							if(sprites[j].name!='bullet' && sprites[j].name!='plane'){
-								Math.abs(sprites[i].left - sprites[j].left) < sprite[j].width
-								Math.abs(sprites[i].top - sprites[j].top) < sprite[j].height
-								if( sprites[i].left 	> sprites[j].left &&
-									sprites[i].left < sprites[j].left + sprites[j].width &&
-									sprites[i].top 	> sprites[j].top &&
-									sprites[i].top 	< sprites[j].top + sprites[j].height){
-								
-									console.log("gameover");
+								leftvalue = sprites[i].left - sprites[j].left;
+								if(leftvalue < 0){
+									leftvalue = Math.abs(leftvalue) < sprites[i].width - 20 ? true : false;
+								}else{
+									leftvalue = Math.abs(leftvalue) < sprites[j].width - 20 ? true : false;
+								}
+
+
+								topvalue = sprites[i].top - sprites[j].top;
+								if(topvalue < 0){
+									topvalue = Math.abs(topvalue) < sprites[i].height - 20 ? true : false;
+								}else{
+									topvalue = Math.abs(topvalue) < sprites[j].height - 20 ? true : false;
+								}
+
+								if( leftvalue && topvalue){
+									sprites[i].hp -= 1 ;
+									sprites[i].update();
 								}
 							}
 						}

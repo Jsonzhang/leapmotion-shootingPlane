@@ -19,7 +19,6 @@
 						
 						sprite.painter.advance();
 						//重新记录最后一次执行时间
-						this.lastPlaneBombTime=time;
 					}
 				
 				}
