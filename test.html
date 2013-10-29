@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+	<HEAD>
+		<meta charset="utf-8" />
+		<!--引入JS中的精灵对象-->
+		<script src="Sprite.js"></script>
+		<!--引入动画绘制方法-->
+		<script src="requestNextAnimationFrame.js"></script>
+		<style>
+			canvas{border:1px solid red}
+		</style>
+	</HEAD>
+	<body>
+		<canvas id="canvas" width="500" height="500">
+			您的浏览器不支持canvas元素
+		</canvas>
+		<script>
+			//获取canvas元素和绘图环境
+			var canvas=document.getElementById('canvas');
+			var context=canvas.getContext('2d');
+			
+			//声明一个绘制器对象（描边和填充绘制器,图像绘制器,精灵绘制器）
+			
+			//----------------------描边和填充绘制器----------------------------------
+			/*
+			//描边和填充绘制器
+			var fillPainter={
+				paint:function(sprite,context){
+					//新建图层 保存当前的绘图环境
+					context.save();
+					context.beginPath();
+					//绘制路径
+					context.arc(250,250,100,0,Math.PI*2,false);
+					//设置填充和描边样式
+					context.fillStyle='#F90';
+					context.strokeStyle='#ABCDEF';
+					context.lineWidth=10;
+					//填充内容
+					context.fill();
+					//描边
+					context.stroke();
+					//合并图层 释放保存的绘图环境
+					context.restore();
+				}
+			}
+			
+			//新建一个精灵对象
+			var MLGB=new Sprite('圆形',fillPainter);
+			
+			
+			function animate(time){
+				//调用精灵对象的绘制方法 绘制精灵对象
+				MLGB.paint(context);
+				
+				//再次调用绘制动画的方法
+				window.requestNextAnimationFrame(animate);
+			}
+			
+			window.requestNextAnimationFrame(animate);
+			
+			*/
+			
+			
+			//----------------------图像绘制器----------------------------------
+			
+			//图像绘制器对象(构造方法)  一般适用于静态背景
+			var ImagePainter=function(url){
+				//创建图片对象 存储到当前成员属性中
+				this.img=new Image();
+				this.img.src=url;
+			}
+			
+			ImagePainter.prototype={
+				paint:function(sprite,context){
+					if(this.img.complete){
+						context.drawImage(this.img,sprite.left,sprite.top,sprite.width,sprite.height);
+					}
+				}
+			
+			}
+			//创建一个图像绘制器对象
+			var imagePainter=new ImagePainter('zhenji.jpg');
+			
+			
+			//创建一个精灵对象
+			var ImageSprite=new Sprite('甄姬',imagePainter);
+			//设置当前精灵对象的属性
+			ImageSprite.left=0;
+			ImageSprite.top=0;
+			ImageSprite.width=500;
+			ImageSprite.height=500;
+			
+			
+			
+			//声明动画函数
+			function animate(time){
+				//绘制精灵对象
+				ImageSprite.paint(context);
+				
+				//调用绘图方法
+				window.requestNextAnimationFrame(animate);
+			}
+			
+			//开启动画绘制
+			window.requestNextAnimationFrame(animate);
+			
+			//精灵对象绘制器  用于绘制动作图片(行走，奔跑，爆炸.....)
+		</script>
+	</body>
+</html>
