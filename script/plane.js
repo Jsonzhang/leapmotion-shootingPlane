@@ -40,7 +40,7 @@ function createPlane(){
 	var plane=new Sprite('plane',new SpritePainter('gameArts.png',cells),[new PlaneBomb()]);
 	//初始化设置
 	plane.hp=option.hp;
-	plane.left=127;
+	plane.left=canvas.width/2 - 33;
 	plane.top=450;
 	plane.width=option.w;
 	plane.height=option.h;

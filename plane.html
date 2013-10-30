@@ -3,9 +3,42 @@
 	<head>
 		<meta charset="utf-8" />
 		<title></title>
-		<style>
-			canvas{border:1px solid #000;}
-			body{text-align:center}
+		<style type="text/css">
+			canvas{
+			}
+			body{
+				text-align:center;
+				background-color:#000;
+				/* cursor:url(img/mouse.png),url(img/mouse.cur),auto; */
+			}
+			.welcome{
+				width:320px;
+				height:568px;
+				background:url("bg.png") no-repeat;
+				margin:0 auto;
+				position:relative;
+				display: none;
+			}
+			.begin{
+				position: absolute;
+				bottom:100px;
+				left:60px;
+				color:#111;
+				display: block;
+				background:url("img/begin.png");
+				width: 200px;
+				height:100px;
+			}
+			.mouse{
+				position:absolute;
+				background:url("img/hand.png") no-repeat;
+				background-size:20px 20px;
+				width:20px;
+				height:20px;
+			}
+			#bg{
+				display: none;
+			}
 		</style>
 		<script src="script/windowTocanvas.js"></script>
 		<script src="script/bgSprite.js"></script>
@@ -18,55 +51,86 @@
 	  
 	</head>
 	<body>
-		<canvas id="canvas" width="320" height="568">浏览器不支持</canvas>
+		<div class="mouse"></div>
+		<div class="welcome">
+			<a href="#" class="begin"></a>
+		</div>
+		<canvas id="canvas" width="638" height="568">浏览器不支持</canvas>
 		 <script>
-	      var pausedFrame = null;
-	      var latestFrame = null;
-	      
-	      
-
-
-
-			var canvas=document.getElementById('canvas');
+		 	var canvas=document.getElementById('canvas');
 			var context=canvas.getContext('2d');
-			
-			
-			//创建对象集合 （集合所有精灵）
-			var sprites=[];
-					
-			//创建我方飞机
-			var plane=createPlane();
-			//讲我方飞机添加到精灵对象集合中
-			sprites.push(plane);
-					
-			//添加飞机计时变量  用于记录飞机出现的时间
-			var smallEnemyTime=0;//记录最后一次小飞机出现的时间
-			var middleEnemyTime=0;//记录最后一次中飞机出现的时间
-			var bigEnemyTime=0;//记录最后一次大飞机出现的时间
-			var bulletTime=0;//记录最后一次子弹出现的时间
-			
-			//声明积分变量
-			var score=0;
-			
-			
+			var mouse = document.getElementsByClassName("mouse")[0];
 			var controller = new Leap.Controller({enableGestures: true});
-		      controller.loop(function(frame) {
+			/*var point;
+
+			var welcome = document.getElementsByClassName("welcome")[0];
+			var beginbtn = document.getElementsByClassName("begin")[0];
+
+			beginbtn.onclick = function(){
+				mouse.style.position = "none";
+				welcome.style.position = "none";
+				canvas.style.position = "block";
+				play();
+			}*/
+
+			// document.body.appendChild(bg);
+
+			/*controller.loop(function(frame) {
 		        latestFrame = frame;
 
 
 		        if(latestFrame.pointables[0]){
 		        		point = {
-		        			x : (latestFrame.pointables[0].tipPosition[0] + 350) * canvas.width / 700,
-		        			y : (700 - latestFrame.pointables[0].tipPosition[1]) * canvas.height / 700
+		        			x : (latestFrame.pointables[0].tipPosition[0] + 350) * (document.body.clientWidth + 100) / 700,
+		        			y : (700 - latestFrame.pointables[0].tipPosition[1]) * (document.body.clientHeight + 100) / 700
+		        		}
+		        			
+						mouse.style.left = (point.x - 10) + "px";
+						mouse.style.top  = (point.y - 10) + "px";
+		        }
+				
+		    });*/
+
+		
+		
+	    	var pausedFrame = null;
+	    	var latestFrame = null;
+	    	var parseNow = false;
+			var sprites=[];
+			var plane=createPlane();
+
+			sprites.push(plane);
+					
+			var smallEnemyTime=0;//记录最后一次小飞机出现的时间
+			var middleEnemyTime=0;//记录最后一次中飞机出现的时间
+			var bigEnemyTime=0;//记录最后一次大飞机出现的时间
+			var bulletTime=0;//记录最后一次子弹出现的时间
+			
+			var score=0,
+				targetX;
+			var controller = new Leap.Controller({enableGestures: true});
+		    controller.loop(function(frame) {
+		        latestFrame = frame;
+
+		       	
+
+		        if(latestFrame.pointables[0]){
+		        		if(latestFrame.pointables[0].tipPosition[0] > 300 ){
+		        			targetX = canvas.width;
+		        		}else{
+		        			targetX = (latestFrame.pointables[0].tipPosition[0] + 350) * (canvas.width+200) / 700;
+		        		}
+		        		targetY =  (latestFrame.pointables[0].tipPosition[2] + 350) * canvas.height / 700;
+
+		        		point = {
+		        			x : targetX,
+		        			y : targetY
 		        		}
 		        			
 						plane.left=point.x-plane.width/2;
 						plane.top=point.y-plane.height/2;
 		        }
-
-
-
-		      });
+		    });
 			
 
 			
@@ -74,7 +138,7 @@
 
 				//添加飞机操作
 				//小飞机添加
-				if(time-smallEnemyTime>1500){
+				if(time-smallEnemyTime>5000){
 					//一次性添加三个小飞机
 					for(var i=0;i<3;i++){
 						sprites.push(createEnemy('smallEnemy'));
@@ -94,7 +158,7 @@
 				}
 				
 				//添加大飞机
-				if(time-bigEnemyTime>10000){
+				if(time-bigEnemyTime>20000){
 					//添加中飞机
 					sprites.push(createEnemy('bigEnemy'));
 					//更新最后一次记录时间
@@ -181,9 +245,10 @@
 									topvalue = Math.abs(topvalue) < sprites[j].height - 20 ? true : false;
 								}
 
-								if( leftvalue && topvalue){
+								if( leftvalue && topvalue && !sprites[j].dying){
 									sprites[i].hp = 0 ;
-									// return false;
+									context.fillText("Game over",canvas.width/2-60,300);
+									return false;
 								}
 							}
 						}
@@ -193,7 +258,7 @@
 				
 				
 				context.font='26px microsoft ';
-				context.fillText('总分:'+score,170,30);
+				context.fillText('总分:'+score,canvas.width - 150,30);
 				
 				//帧率计算
 				//再次调用绘制动画方法
@@ -201,7 +266,6 @@
 			}
 			
 			window.requestAnimationFrame(animate);
-			
 		</script>
 	</body>
 </html>

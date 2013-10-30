@@ -44,7 +44,7 @@ EnemyBomb.prototype={
 		//轮播每一个图片
 		if(time-this.lastEnemyBombTime>this.cycle && sprite.hp==0){
 			//更新当前绘图使用的图片
-			
+			sprite.dying = true;
 			sprite.painter.advance();
 			//判断 如果当前飞机死亡hp=0 且爆炸效果播放完毕 删除该飞机
 			if(sprite.painter.cellIndex==sprite.painter.cells.length-1){
@@ -84,7 +84,7 @@ EnemyBomb.prototype={
 						{x:432,y:478,w:46,h:59}
 					];
 				//中飞机的配置
-				var middleOption={w:46,h:63,moveY:80+Math.floor(Math.random()*100),hp:10,score:1000}
+				var middleOption={w:46,h:63,moveY:80+Math.floor(Math.random()*100),hp:5,score:1000}
 				
 				//大飞机的信息
 				var bigCells=[
@@ -100,7 +100,7 @@ EnemyBomb.prototype={
 					];
 					
 				//大飞机的配置
-				var bigOption={w:110,h:170,moveY:70+Math.floor(Math.random()*70),hp:20,score:2000}
+				var bigOption={w:110,h:170,moveY:70+Math.floor(Math.random()*70),hp:15,score:2000}
 					
 				//判断飞机使用的图片对象集合
 				if(name=='smallEnemy'){
@@ -116,14 +116,14 @@ EnemyBomb.prototype={
 				//实例化精灵对象
 				var Enemy=new Sprite(name,new SpritePainter('gameArts.png',cells),[new EnemyFly(),new EnemyBomb()]);
 				//属性初始化
-				Enemy.left=Math.floor(Math.random()*320)-Enemy.width;
+				Enemy.left=Math.floor(Math.random()*640)-Enemy.width;
 				Enemy.top=-option.h;
 				Enemy.width=option.w;
 				Enemy.height=option.h;
 				Enemy.moveY=option.moveY;
 				Enemy.hp=option.hp;//气血属性
 				Enemy.score=option.score;//积分属性
-				Enemy.destroying = false;
+				Enemy.dying = false;
 				//返回精灵对象
 				return Enemy;
 			}
