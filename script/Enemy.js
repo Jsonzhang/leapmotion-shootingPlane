@@ -114,7 +114,7 @@ EnemyBomb.prototype={
 					var option=bigOption;
 				}
 				//实例化精灵对象
-				var Enemy=new Sprite(name,new SpritePainter('gameArts.png',cells),[new EnemyFly(),new EnemyBomb()]);
+				var Enemy=new Sprite(name,new SpritePainter('img/gameArts.png',cells),[new EnemyFly(),new EnemyBomb()]);
 				//属性初始化
 				Enemy.left=Math.floor(Math.random()*640)-Enemy.width;
 				Enemy.top=-option.h;
