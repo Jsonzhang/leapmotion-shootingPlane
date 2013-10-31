@@ -41,7 +41,7 @@ function createBullet(planeX,planeY){
 			];
 	
 	//创建一个子弹对象
-	var bullet=new Sprite('bullet',new SpritePainter('gameArts.png',cells),[new BulletFly()]);
+	var bullet=new Sprite('bullet',new SpritePainter('img/gameArts.png',cells),[new BulletFly()]);
 	
 	//初始化子弹的属性
 	bullet.left=option.x;

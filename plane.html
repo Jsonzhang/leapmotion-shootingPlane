@@ -14,7 +14,7 @@
 			.welcome{
 				width:320px;
 				height:568px;
-				background:url("bg.png") no-repeat;
+				background:url("img/bg.png") no-repeat;
 				margin:0 auto;
 				position:relative;
 				display: none;
@@ -107,7 +107,8 @@
 			var bulletTime=0;//记录最后一次子弹出现的时间
 			
 			var score=0,
-				targetX;
+				targetX,
+				gameover;
 			var controller = new Leap.Controller({enableGestures: true});
 		    controller.loop(function(frame) {
 		        latestFrame = frame;
@@ -236,8 +237,6 @@
 								}else{
 									leftvalue = Math.abs(leftvalue) < sprites[j].width - 20 ? true : false;
 								}
-
-
 								topvalue = sprites[i].top - sprites[j].top;
 								if(topvalue < 0){
 									topvalue = Math.abs(topvalue) < sprites[i].height - 20 ? true : false;
@@ -247,8 +246,10 @@
 
 								if( leftvalue && topvalue && !sprites[j].dying){
 									sprites[i].hp = 0 ;
-									context.fillText("Game over",canvas.width/2-60,300);
-									return false;
+									setTimeout(function(){
+										gameover = true;
+									}, 1000);
+									// return false;
 								}
 							}
 						}
@@ -262,6 +263,13 @@
 				
 				//帧率计算
 				//再次调用绘制动画方法
+
+				if(gameover){
+					bgSprite.paint(context);
+					context.fillText("Game over",canvas.width/2-60,300);
+					context.fillText('总分:'+score,canvas.width/2-60,200);
+					return false;
+				}
 				window.requestAnimationFrame(animate);
 			}
 			
