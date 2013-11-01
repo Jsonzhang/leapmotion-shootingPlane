@@ -55,7 +55,7 @@
 		<div class="welcome">
 			<a href="#" class="begin"></a>
 		</div>
-		<canvas id="canvas" width="638" height="568">浏览器不支持</canvas>
+		<canvas id="canvas" width="1858" height="1200">浏览器不支持</canvas>
 		 <script>
 		 	var canvas=document.getElementById('canvas');
 			var context=canvas.getContext('2d');
@@ -91,7 +91,8 @@
 				
 		    });*/
 
-		
+			var bgSprite=new BgSprite({w:canvas.width,h:canvas.height,My:30,url:'img/bg.png'});
+			
 		
 	    	var pausedFrame = null;
 	    	var latestFrame = null;
@@ -110,18 +111,19 @@
 				targetX,
 				gameover;
 			var controller = new Leap.Controller({enableGestures: true});
+
+
+
 		    controller.loop(function(frame) {
 		        latestFrame = frame;
-
-		       	
-
-		        if(latestFrame.pointables[0]){
-		        		if(latestFrame.pointables[0].tipPosition[0] > 300 ){
-		        			targetX = canvas.width;
-		        		}else{
-		        			targetX = (latestFrame.pointables[0].tipPosition[0] + 350) * (canvas.width+200) / 700;
-		        		}
-		        		targetY =  (latestFrame.pointables[0].tipPosition[2] + 350) * canvas.height / 700;
+		        if(latestFrame.hands[0]){
+		        		
+		        		targetX = (latestFrame.hands[0].stabilizedPalmPosition[0] + 250) * (canvas.width+200) / 500;
+		        		targetY =  (latestFrame.hands[0].stabilizedPalmPosition[2] + 250) * (canvas.height+200) / 500;
+		        		if(targetX < 0 ){targetX = 0}
+		        		if(targetX > canvas.width ){targetX = canvas.width}
+		        		if(targetY < 0 ){targetY = 0}
+		        		if(targetY > canvas.height ){targetY = canvas.height}
 
 		        		point = {
 		        			x : targetX,
@@ -139,7 +141,7 @@
 
 				//添加飞机操作
 				//小飞机添加
-				if(time-smallEnemyTime>5000){
+				if(time-smallEnemyTime>1000){
 					//一次性添加三个小飞机
 					for(var i=0;i<3;i++){
 						sprites.push(createEnemy('smallEnemy'));
@@ -150,7 +152,7 @@
 				}
 				
 				//添加中飞机
-				if(time-middleEnemyTime>3000){
+				if(time-middleEnemyTime>5000){
 					//添加中飞机
 					sprites.push(createEnemy('middleEnemy'));
 					sprites.push(createEnemy('middleEnemy'));
@@ -159,7 +161,7 @@
 				}
 				
 				//添加大飞机
-				if(time-bigEnemyTime>20000){
+				if(time-bigEnemyTime>10000){
 					//添加中飞机
 					sprites.push(createEnemy('bigEnemy'));
 					//更新最后一次记录时间
@@ -220,8 +222,6 @@
 										//讲当前子弹变为不可见状态
 										sprites[i].visible=false;
 									}
-									
-								
 								}
 							
 							}
@@ -256,21 +256,27 @@
 					}
 					sprites[i].paint(context);
 				}
+
+
+
+
 				
 				
-				context.font='26px microsoft ';
-				context.fillText('总分:'+score,canvas.width - 150,30);
+				
+				context.font='50px microsoft yahei';
+				context.fillText('总分:'+score,canvas.width - 300,50);
 				
 				//帧率计算
 				//再次调用绘制动画方法
 
 				if(gameover){
 					bgSprite.paint(context);
-					context.fillText("Game over",canvas.width/2-60,300);
-					context.fillText('总分:'+score,canvas.width/2-60,200);
+					context.fillText("Game over",canvas.width/2-100,canvas.height/2 - 100);
+					context.fillText('总分:'+score,canvas.width/2-100,canvas.height/2 - 20);
 					return false;
+				}else{
+					window.requestAnimationFrame(animate);
 				}
-				window.requestAnimationFrame(animate);
 			}
 			
 			window.requestAnimationFrame(animate);

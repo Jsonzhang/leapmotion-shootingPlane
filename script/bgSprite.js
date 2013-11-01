@@ -54,7 +54,6 @@ BgSprite.prototype={
 
 //实例化一个对象
 
-var bgSprite=new BgSprite({w:638,h:568,My:30,url:'img/bg.png'});
 
 
 

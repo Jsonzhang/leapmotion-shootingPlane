@@ -1,27 +1,26 @@
-//新建飞机行为对象
+//新建炸弹对象
 			
 			
-//-----------用于飞行的对象-------------------
+//-----------用于炸弹的对象-------------------
 //写一个构造方法
-var EnemyFly=function(){
-	//用于记录时间的成员属性
-	this.lastEnemyFlyTime=0;
+var bomb=function(){
+	this.lastFlyTime=0;
 }
 //在圆形中写入方法
-EnemyFly.prototype={
+bomb.prototype={
 	execute:function(sprite,context,time){
 		//检测动画是否开始运行(时间)
-		if(this.lastEnemyFlyTime!==0){
+		if(this.lastEnemyTime!==0){
 			//更新飞机的位置 top坐标
-			sprite.top=sprite.top+sprite.moveY/1000*(time-this.lastEnemyFlyTime);
+			sprite.top=sprite.top+sprite.moveY/1000*(time-this.lastEnemyTime);
 			
 			//判断当前飞机的位置是否飞出屏幕，如果已经离开屏幕  隐藏
 			if(sprite.top>context.canvas.height){
 				sprite.visible=false;
-			}	
+			}
 		}
 		//记录每次动画的最后一次时间
-		this.lastEnemyFlyTime=time;
+		this.lastEnemyTime=time;
 		
 	}
 
@@ -31,7 +30,7 @@ EnemyFly.prototype={
 //---------------用于爆炸的行为对象------------------------
 
 //构造方法
-var EnemyBomb=function(){
+var Bombing=function(){
 	//记录最后一次时间
 	this.lastEnemyBombTime=0;
 	//每一个画面的时间
@@ -39,14 +38,13 @@ var EnemyBomb=function(){
 }
 
 //对象圆形
-EnemyBomb.prototype={
+Bombing.prototype={
 	execute:function(sprite,context,time){
 		//轮播每一个图片
 		if(time-this.lastEnemyBombTime>this.cycle && sprite.hp==0){
 			//更新当前绘图使用的图片
 			sprite.dying = true;
 			sprite.painter.advance();
-			//判断 如果当前飞机死亡hp=0 且爆炸效果播放完毕 删除该飞机
 			if(sprite.painter.cellIndex==sprite.painter.cells.length-1){
 				sprite.visible=false;
 			}
@@ -55,9 +53,7 @@ EnemyBomb.prototype={
 		}
 	
 	}
-			
-			
-			}
+}
 			
 			
 //使用工厂模式来创建敌机(可以创建三种飞机的函数)

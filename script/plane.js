@@ -41,7 +41,7 @@ function createPlane(){
 	//初始化设置
 	plane.hp=option.hp;
 	plane.left=canvas.width/2 - 33;
-	plane.top=450;
+	plane.top=canvas.height - 84;
 	plane.width=option.w;
 	plane.height=option.h;
 	
