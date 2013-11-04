@@ -62,39 +62,16 @@ Bombing.prototype={
 */
 function createEnemy(name){
 	//小飞机的信息
-	var smallCells=[
-			{x:80,y:655,w:35,h:30},//正常飞行
-			{x:45,y:655,w:35,h:30},					
-			{x:418,y:731,w:40,h:30},					
-			{x:473,y:723,w:40,h:50}
+	var bombcome=[
+			{x:80,y:661,w:36,h:67},//正常飞行
+			{x:45,y:664,w:36,h:67},					
+			{x:418,y:731,w:36,h:67},					
+			{x:473,y:723,w:36,h:67}
 		];
 	//小飞机的配置
 	var smallOption={w:40,h:50,moveY:100+Math.floor(Math.random()*200),hp:1,score:500}
 		
-	//中飞机的信息
-	var middleCells=[
-			{x:0,y:569,w:46,h:60},//正常飞行
-			{x:432,y:413,w:46,h:61},
-			{x:432,y:538,w:46,h:63},
-			{x:432,y:599,w:46,h:58},
-			{x:432,y:478,w:46,h:59}
-		];
-	//中飞机的配置
-	var middleOption={w:46,h:63,moveY:80+Math.floor(Math.random()*200),hp:5,score:1000}
-	
-	//大飞机的信息
-	var bigCells=[
-			{x:110,y:736,w:110,h:170},//正常飞行
-			{x:221,y:857,w:110,h:170},
-			{x:310,y:680,w:110,h:170},
-			{x:0,y:754,w:110,h:170},
-			{x:322,y:340,w:110,h:170},										
-			{x:322,y:170,w:110,h:170},										
-			{x:322,y:340,w:110,h:170},										
-			{x:322,y:510,w:110,h:170},									
-			{x:322,y:0,w:110,h:170}
-		];
-		
+
 	//大飞机的配置
 	var bigOption={w:110,h:170,moveY:70+Math.floor(Math.random()*200),hp:15,score:2000}
 		
