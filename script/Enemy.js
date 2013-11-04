@@ -45,6 +45,9 @@ EnemyBomb.prototype={
 		if(time-this.lastEnemyBombTime>this.cycle && sprite.hp==0){
 			//更新当前绘图使用的图片
 			sprite.dying = true;
+			if(sprite.sound){
+				sprite.sound.play();
+			}
 			sprite.painter.advance();
 			//判断 如果当前飞机死亡hp=0 且爆炸效果播放完毕 删除该飞机
 			if(sprite.painter.cellIndex==sprite.painter.cells.length-1){
@@ -56,8 +59,7 @@ EnemyBomb.prototype={
 	
 	}
 			
-			
-			}
+}
 			
 			
 //使用工厂模式来创建敌机(可以创建三种飞机的函数)
@@ -117,13 +119,15 @@ function createEnemy(name){
 	var Enemy=new Sprite(name,new SpritePainter('img/gameArts.png',cells),[new EnemyFly(),new EnemyBomb()]);
 	//属性初始化
 	Enemy.left=Math.floor(Math.random()*canvas.width)-Enemy.width;
-	Enemy.top=-option.h;
+	Enemy.top=-option.h/2;
 	Enemy.width=option.w;
 	Enemy.height=option.h;
 	Enemy.moveY=option.moveY;
 	Enemy.hp=option.hp;//气血属性
 	Enemy.score=option.score;//积分属性
 	Enemy.dying = false;
+	Enemy.sound = document.createElement("video");
+	Enemy.sound.src = "sound/enemy1_down.mp3";
 	//返回精灵对象
 	return Enemy;
 }

@@ -9,6 +9,7 @@
 			body{
 				text-align:center;
 				background-color:#000;
+				margin:0;
 				/* cursor:url(img/mouse.png),url(img/mouse.cur),auto; */
 			}
 			.welcome{
@@ -35,9 +36,14 @@
 				background-size:20px 20px;
 				width:20px;
 				height:20px;
+				display: none;
 			}
 			#bg{
 				display: none;
+			}
+			:-webkit-full-screen #canvas {
+			  width: 100%;
+			  height: 100%;
 			}
 		</style>
 		<script src="script/windowTocanvas.js"></script>
@@ -48,6 +54,7 @@
 		<script src="script/Bullet.js"></script>
 
 		<script src="script/leap.min.js"></script>
+		<script src="http://lib.cdc.com/js/jquery/jquery-2.0.0.min.js"></script>
 	  
 	</head>
 	<body>
@@ -55,12 +62,31 @@
 		<div class="welcome">
 			<a href="#" class="begin"></a>
 		</div>
-		<canvas id="canvas" width="1858" height="1200">浏览器不支持</canvas>
+		<canvas id="canvas" width="1280" height="960">浏览器不支持</canvas>
 		 <script>
+
+
 		 	var canvas=document.getElementById('canvas');
 			var context=canvas.getContext('2d');
 			var mouse = document.getElementsByClassName("mouse")[0];
 			var controller = new Leap.Controller({enableGestures: true});
+
+
+			var bgsound = document.createElement("video");
+			bgsound.src="sound/game_music.mp3";
+			var bullet = document.createElement("video");
+			bullet.src="sound/bullet.mp3";
+			var gameoverSound = document.createElement("video");
+			gameoverSound.src="sound/game_over.mp3";
+
+			bgsound.play();
+
+			canvas.onclick = function(){
+				 canvas.webkitRequestFullScreen();
+			}
+    
+			
+
 			/*var point;
 
 			var welcome = document.getElementsByClassName("welcome")[0];
@@ -168,10 +194,11 @@
 					bigEnemyTime=time;
 				}
 				
-				//添加子弹
-				if(time-bulletTime>200){
+				//添加子弹 小于300声音会受不了
+				if(time-bulletTime>300){
 					sprites.push(createBullet(plane.left+plane.width/2,plane.top-15));
 					bulletTime=time;
+					bullet.play();
 				}
 				
 				
@@ -193,7 +220,6 @@
 						if(sprites[i].name!='bullet' && sprites[i].name!='plane' ){//判断是否是飞机
 							score=score+sprites[i].score;
 						}
-						
 						//删除不可见的对象
 						sprites.splice(i,1);
 					}	
@@ -270,9 +296,11 @@
 				//再次调用绘制动画方法
 
 				if(gameover){
+					bgsound.pause();
+					gameoverSound.play();
 					bgSprite.paint(context);
-					context.fillText("Game over",canvas.width/2-100,canvas.height/2 - 100);
-					context.fillText('总分:'+score,canvas.width/2-100,canvas.height/2 - 20);
+					context.fillText("Game over",canvas.width/2-150,canvas.height/2 - 50);
+					context.fillText('总分:'+score,canvas.width/2-150,canvas.height/2 + 50);
 					return false;
 				}else{
 					window.requestAnimationFrame(animate);
