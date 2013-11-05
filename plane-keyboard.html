@@ -1,0 +1,306 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style type="text/css">
+			canvas{
+			}
+			body{
+				text-align:center;
+				background-color:#000;
+				margin:0;
+				/* cursor:url(img/mouse.png),url(img/mouse.cur),auto; */
+			}
+			.welcome{
+				width:320px;
+				height:568px;
+				background:url("img/bg.png") no-repeat;
+				margin:0 auto;
+				position:relative;
+				display: none;
+			}
+			.begin{
+				position: absolute;
+				bottom:100px;
+				left:60px;
+				color:#111;
+				display: block;
+				background:url("img/begin.png");
+				width: 200px;
+				height:100px;
+			}
+			.mouse{
+				position:absolute;
+				background:url("img/hand.png") no-repeat;
+				background-size:20px 20px;
+				width:20px;
+				height:20px;
+				display: none;
+			}
+			#bg{
+				display: none;
+			}
+			:-webkit-full-screen #canvas {
+			  width: 100%;
+			  height: 100%;
+			}
+		</style>
+		<script src="script/windowTocanvas.js"></script>
+		<script src="script/bgSprite.js"></script>
+		<script src="script/Sprite.js"></script>
+		<script src="script/Enemy.js"></script>
+		<script src="script/plane.js"></script>
+		<script src="script/Bullet.js"></script>
+
+		<script src="script/leap.min.js"></script>
+	  
+	</head>
+	<body>
+		<div class="mouse"></div>
+		<div class="welcome">
+			<a href="#" class="begin"></a>
+		</div>
+		<canvas id="canvas" width="1366" height="764">浏览器不支持</canvas>
+		 <script>
+
+
+		 	var canvas=document.getElementById('canvas');
+			var context=canvas.getContext('2d');
+			var mouse = document.getElementsByClassName("mouse")[0];
+			var controller = new Leap.Controller({enableGestures: true});
+
+			var body = document.body;
+			var bgsound = document.createElement("video");
+			bgsound.src="sound/game_music.mp3";
+			var bullet = document.createElement("video");
+			bullet.src="sound/bullet.mp3";
+			var gameoverSound = document.createElement("video");
+			gameoverSound.src="sound/game_over.mp3";
+
+			bgsound.play();
+
+
+			
+
+			
+
+			var bgSprite=new BgSprite({w:canvas.width,h:canvas.height,My:30,url:'img/bg.png'});
+			
+		
+	    	var pausedFrame = null;
+	    	var latestFrame = null;
+	    	var parseNow = false;
+			var sprites=[];
+			var plane=createPlane();
+
+			sprites.push(plane);
+					
+			var smallEnemyTime=0;//记录最后一次小飞机出现的时间
+			var middleEnemyTime=0;//记录最后一次中飞机出现的时间
+			var bigEnemyTime=0;//记录最后一次大飞机出现的时间
+			var bulletTime=0;//记录最后一次子弹出现的时间
+			
+			var score=0,
+				point ,
+				targetX = plane.left + plane.width/2,
+				targetY = plane.top + plane.height/2,
+				gameover;
+			var controller = new Leap.Controller({enableGestures: true});
+			var bombNum = 0;
+
+
+		    body.onkeydown = function(e){
+				if(e.which === 37){targetX -= 10;}
+				if(e.which === 38){targetY -= 10;}
+				if(e.which === 39){targetX += 10;}
+				if(e.which === 40){targetY += 10;}
+				
+				if(targetX < 0 + plane.width/2 ){targetX = 0 + plane.width/2}
+        		if(targetX > canvas.width - plane.width/2 ){targetX = canvas.width - plane.width/2}
+        		if(targetY < 0 + plane.height/2 ){targetY = 0 + plane.height/2}
+        		if(targetY > canvas.height - plane.height/2 ){targetY = canvas.height - plane.height/2}
+
+
+        		point = {
+        			x : targetX,
+        			y : targetY
+        		}
+        		plane.left=point.x - plane.width/2;
+				plane.top=point.y - plane.height/2;
+			}
+		     /*   latestFrame = frame;
+		        if(latestFrame.hands[0]){
+		        		
+		        		targetX = (latestFrame.hands[0].stabilizedPalmPosition[0] + 250) * (canvas.width+200) / 500;
+		        		targetY =  (latestFrame.hands[0].stabilizedPalmPosition[2] + 250) * (canvas.height+200) / 500;
+		        		if(targetX < 0 + plane.width/2 ){targetX = 0 + plane.width/2}
+		        		if(targetX > canvas.width - plane.width/2 ){targetX = canvas.width - plane.width/2}
+		        		if(targetY < 0 + plane.height/2 ){targetY = 0 + plane.height/2}
+		        		if(targetY > canvas.height - plane.height/2 ){targetY = canvas.height - plane.height/2}
+
+		        		point = {
+		        			x : targetX,
+		        			y : targetY
+		        		}
+		        			
+						plane.left=point.x-plane.width/2;
+						plane.top=point.y-plane.height/2;
+		        }*/
+
+
+			
+			function animate(time){
+
+				//添加飞机操作
+				//小飞机添加
+				if(time-smallEnemyTime>1000){
+					//一次性添加三个小飞机
+					for(var i=0;i<3;i++){
+						sprites.push(createEnemy('smallEnemy'));
+					}
+					//更新最后一次记录时间
+					smallEnemyTime=time;	
+	
+				}
+				
+				//添加中飞机
+				if(time-middleEnemyTime>5000){
+					//添加中飞机
+					sprites.push(createEnemy('middleEnemy'));
+					sprites.push(createEnemy('middleEnemy'));
+					//更新最后一次记录时间
+					middleEnemyTime=time;
+				}
+				
+				//添加大飞机
+				if(time-bigEnemyTime>10000){
+					//添加中飞机
+					sprites.push(createEnemy('bigEnemy'));
+					//更新最后一次记录时间
+					bigEnemyTime=time;
+				}
+				
+				//添加子弹 小于300声音会受不了
+				if(time-bulletTime>300){
+					sprites.push(createBullet(plane.left+plane.width/2,plane.top-15));
+					bulletTime=time;
+					bullet.play();
+				}
+				
+				/*if(time-bombTime>40000){
+					sprites.push(createbomb());
+					bombTime=time;
+				}*/
+				
+				
+				//更新当前背景的位置
+				bgSprite.update(context,time);
+				//绘制背景
+				bgSprite.paint(context);
+				
+				//循环遍历所有精灵对象 更新行为
+				for(var i=0;i<sprites.length;i++){
+					sprites[i].update(context,time);
+					
+					
+					//判断是否有不可见的精灵对象
+					if(sprites[i].visible==false){
+						//在飞机对象删除之前把分数累加起来
+						if(sprites[i].name!='bullet' && sprites[i].name!='plane' ){//判断是否是飞机
+							score=score+sprites[i].score;
+						}
+						//删除不可见的对象
+						sprites.splice(i,1);
+					}	
+				}
+				//循环遍历所有精灵对象 绘制对象
+				for(var i=0;i<sprites.length;i++){
+					//判断子弹是否击中敌机
+					if(sprites[i].name=='bullet'){
+						for(var j=0;j<sprites.length;j++){
+							//挑选不是子弹和我方飞机的对象(三种敌机)
+							if(sprites[j].name!='bullet' && sprites[j].name!='plane' && sprites[j].name!='bomb'){
+								//判断子弹和每个敌机的位置
+								//子弹的横坐标>飞机左侧位置
+								if(sprites[i].left>sprites[j].left &&
+									//子弹的横坐标<飞机右侧位置（右侧=左侧+宽度）
+									sprites[i].left<sprites[j].left+sprites[j].width &&
+									//子弹的纵坐标>顶部位置
+									sprites[i].top>sprites[j].top &&
+									//子弹纵坐标<底部位置
+									sprites[i].top<sprites[j].top + sprites[j].height - 30){
+								
+									//只有飞机气血>=1的情况下才减血
+									if(sprites[j].hp>=1){
+										//讲当前飞机的气血-1
+										sprites[j].hp-=1;
+										//讲当前子弹变为不可见状态
+										sprites[i].visible=false;
+									}
+								}
+							
+							}
+						}
+					}
+					var leftvalue,topvalue;
+					if(sprites[i].name=='plane'){
+						for(j=0;j<sprites.length;j++){
+							if(sprites[j].name!='bullet' && sprites[j].name!='plane' && sprites[j].name!='bomb'){
+								leftvalue = sprites[i].left - sprites[j].left;
+								if(leftvalue < 0){
+									leftvalue = Math.abs(leftvalue) < sprites[i].width - 20 ? true : false;
+								}else{
+									leftvalue = Math.abs(leftvalue) < sprites[j].width - 20 ? true : false;
+								}
+								topvalue = sprites[i].top - sprites[j].top;
+								if(topvalue < 0){
+									topvalue = Math.abs(topvalue) < sprites[i].height - 20 ? true : false;
+								}else{
+									topvalue = Math.abs(topvalue) < sprites[j].height - 20 ? true : false;
+								}
+
+								if( leftvalue && topvalue && !sprites[j].dying){
+									sprites[i].hp = 0 ;
+									setTimeout(function(){
+										gameover = true;
+									}, 1000);
+									// return false;
+								}
+							}
+						}
+					}
+					sprites[i].paint(context);
+				}
+
+
+
+
+				
+				
+				
+				context.font='30px kroeger0853cyr';
+				context.verticalAlign='middle';
+				context.fillText('Score: '+score,canvas.width - 300,50);
+				
+				//帧率计算
+				//再次调用绘制动画方法
+
+				if(gameover){
+					bgsound.pause();
+					gameoverSound.play();
+					bgSprite.paint(context);
+					context.font='150px kroeger0853cyr';
+					context.fillText("Game over",canvas.width/2-500,canvas.height/2 - 100);
+					context.font='40px kroeger0853cyr';
+					context.fillText('Score: '+score,canvas.width/2-150,canvas.height/2 + 100);
+					return false;
+				}else{
+					window.requestAnimationFrame(animate);
+				}
+			}
+			
+			window.requestAnimationFrame(animate);
+		</script>
+	</body>
+</html>
