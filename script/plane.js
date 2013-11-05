@@ -39,9 +39,10 @@ function createPlane(){
 	//创建我方飞机
 	var plane=new Sprite('plane',new SpritePainter('img/gameArts.png',cells),[new PlaneBomb()]);
 	//初始化设置
+	console.log(option.w,option.h);
 	plane.hp=option.hp;
-	plane.left=canvas.width/2 - 33;
-	plane.top=canvas.height - 84;
+	plane.left=(canvas.width - option.w)/2;
+	plane.top=canvas.height - option.h;
 	plane.width=option.w;
 	plane.height=option.h;
 	

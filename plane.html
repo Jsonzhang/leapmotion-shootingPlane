@@ -54,7 +54,6 @@
 		<script src="script/Bullet.js"></script>
 
 		<script src="script/leap.min.js"></script>
-		<script src="http://lib.cdc.com/js/jquery/jquery-2.0.0.min.js"></script>
 	  
 	</head>
 	<body>
@@ -62,7 +61,7 @@
 		<div class="welcome">
 			<a href="#" class="begin"></a>
 		</div>
-		<canvas id="canvas" width="1280" height="960">浏览器不支持</canvas>
+		<canvas id="canvas" width="1366" height="764">浏览器不支持</canvas>
 		 <script>
 
 
@@ -137,7 +136,7 @@
 				targetX,
 				gameover;
 			var controller = new Leap.Controller({enableGestures: true});
-
+			var bombNum = 0;
 
 
 		    controller.loop(function(frame) {
@@ -146,10 +145,10 @@
 		        		
 		        		targetX = (latestFrame.hands[0].stabilizedPalmPosition[0] + 250) * (canvas.width+200) / 500;
 		        		targetY =  (latestFrame.hands[0].stabilizedPalmPosition[2] + 250) * (canvas.height+200) / 500;
-		        		if(targetX < 0 ){targetX = 0}
-		        		if(targetX > canvas.width ){targetX = canvas.width}
-		        		if(targetY < 0 ){targetY = 0}
-		        		if(targetY > canvas.height ){targetY = canvas.height}
+		        		if(targetX < 0 + plane.width/2 ){targetX = 0 + plane.width/2}
+		        		if(targetX > canvas.width - plane.width/2 ){targetX = canvas.width - plane.width/2}
+		        		if(targetY < 0 + plane.height/2 ){targetY = 0 + plane.height/2}
+		        		if(targetY > canvas.height - plane.height/2 ){targetY = canvas.height - plane.height/2}
 
 		        		point = {
 		        			x : targetX,
@@ -158,6 +157,11 @@
 		        			
 						plane.left=point.x-plane.width/2;
 						plane.top=point.y-plane.height/2;
+		        }
+
+
+		        if(latestFrame.pointables[0]){
+		        	console.log(latestFrame.pointables.length);
 		        }
 		    });
 			
@@ -201,7 +205,10 @@
 					bullet.play();
 				}
 				
-				
+				/*if(time-bombTime>40000){
+					sprites.push(createbomb());
+					bombTime=time;
+				}*/
 				
 				
 				//更新当前背景的位置
@@ -230,7 +237,7 @@
 					if(sprites[i].name=='bullet'){
 						for(var j=0;j<sprites.length;j++){
 							//挑选不是子弹和我方飞机的对象(三种敌机)
-							if(sprites[j].name!='bullet' && sprites[j].name!='plane'){
+							if(sprites[j].name!='bullet' && sprites[j].name!='plane' && sprites[j].name!='bomb'){
 								//判断子弹和每个敌机的位置
 								//子弹的横坐标>飞机左侧位置
 								if(sprites[i].left>sprites[j].left &&
@@ -256,7 +263,7 @@
 					var leftvalue,topvalue;
 					if(sprites[i].name=='plane'){
 						for(j=0;j<sprites.length;j++){
-							if(sprites[j].name!='bullet' && sprites[j].name!='plane'){
+							if(sprites[j].name!='bullet' && sprites[j].name!='plane' && sprites[j].name!='bomb'){
 								leftvalue = sprites[i].left - sprites[j].left;
 								if(leftvalue < 0){
 									leftvalue = Math.abs(leftvalue) < sprites[i].width - 20 ? true : false;
@@ -289,8 +296,9 @@
 				
 				
 				
-				context.font='50px microsoft yahei';
-				context.fillText('总分:'+score,canvas.width - 300,50);
+				context.font='30px kroeger0853cyr';
+				context.verticalAlign='middle';
+				context.fillText('Score: '+score,canvas.width - 300,50);
 				
 				//帧率计算
 				//再次调用绘制动画方法
@@ -299,8 +307,10 @@
 					bgsound.pause();
 					gameoverSound.play();
 					bgSprite.paint(context);
-					context.fillText("Game over",canvas.width/2-150,canvas.height/2 - 50);
-					context.fillText('总分:'+score,canvas.width/2-150,canvas.height/2 + 50);
+					context.font='150px kroeger0853cyr';
+					context.fillText("Game over",canvas.width/2-500,canvas.height/2 - 100);
+					context.font='40px kroeger0853cyr';
+					context.fillText('Score: '+score,canvas.width/2-150,canvas.height/2 + 100);
 					return false;
 				}else{
 					window.requestAnimationFrame(animate);

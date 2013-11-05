@@ -3,18 +3,17 @@
 			
 //-----------用于炸弹的对象-------------------
 //写一个构造方法
-var bomb=function(){
+var bombing=function(){
 	this.lastFlyTime=0;
 }
 //在圆形中写入方法
-bomb.prototype={
+bombing.prototype={
 	execute:function(sprite,context,time){
 		//检测动画是否开始运行(时间)
 		if(this.lastEnemyTime!==0){
 			//更新飞机的位置 top坐标
 			sprite.top=sprite.top+sprite.moveY/1000*(time-this.lastEnemyTime);
 			
-			//判断当前飞机的位置是否飞出屏幕，如果已经离开屏幕  隐藏
 			if(sprite.top>context.canvas.height){
 				sprite.visible=false;
 			}
@@ -42,8 +41,6 @@ Bombing.prototype={
 	execute:function(sprite,context,time){
 		//轮播每一个图片
 		if(time-this.lastEnemyBombTime>this.cycle && sprite.hp==0){
-			//更新当前绘图使用的图片
-			sprite.dying = true;
 			sprite.painter.advance();
 			if(sprite.painter.cellIndex==sprite.painter.cells.length-1){
 				sprite.visible=false;
@@ -51,7 +48,6 @@ Bombing.prototype={
 			//重新记录最后一次执行时间
 			this.lastEnemyBombTime=time;
 		}
-	
 	}
 }
 			
@@ -60,45 +56,25 @@ Bombing.prototype={
 /**
 参数:name  smallEnemy小飞机  middleEnemy中飞机  bigEnemy大飞机
 */
-function createEnemy(name){
+function createbomb(){
 	//小飞机的信息
 	var bombcome=[
-			{x:80,y:661,w:36,h:67},//正常飞行
-			{x:45,y:664,w:36,h:67},					
-			{x:418,y:731,w:36,h:67},					
-			{x:473,y:723,w:36,h:67}
+			{x:660,y:433,w:37,h:66},//正常飞行
+			{x:418,y:731,w:37,h:66}				
 		];
-	//小飞机的配置
-	var smallOption={w:40,h:50,moveY:100+Math.floor(Math.random()*200),hp:1,score:500}
-		
 
-	//大飞机的配置
-	var bigOption={w:110,h:170,moveY:70+Math.floor(Math.random()*200),hp:15,score:2000}
-		
-	//判断飞机使用的图片对象集合
-	if(name=='smallEnemy'){
-		var cells=smallCells;
-		var option=smallOption;
-	}else if(name=='middleEnemy'){
-		var cells=middleCells;
-		var option=middleOption;
-	}else{
-		var cells=bigCells;
-		var option=bigOption;
-	}
+	var bombOption={w:110,h:170,moveY:70+Math.floor(Math.random()*200)}
+	
 	//实例化精灵对象
-	var Enemy=new Sprite(name,new SpritePainter('img/gameArts.png',cells),[new EnemyFly(),new EnemyBomb()]);
+	var bomb=new Sprite("bomb",new SpritePainter('img/gameArts.png',cells),[new bombing()]);
 	//属性初始化
-	Enemy.left=Math.floor(Math.random()*canvas.width)-Enemy.width;
-	Enemy.top=-option.h;
-	Enemy.width=option.w;
-	Enemy.height=option.h;
-	Enemy.moveY=option.moveY;
-	Enemy.hp=option.hp;//气血属性
-	Enemy.score=option.score;//积分属性
-	Enemy.dying = false;
+	bomb.left=Math.floor(Math.random()*canvas.width)-bomb.width;
+	bomb.top=-option.h;
+	bomb.width=option.w;
+	bomb.height=option.h;
+	bomb.moveY=option.moveY;
 	//返回精灵对象
-	return Enemy;
+	return bomb;
 }
 
 

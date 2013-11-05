@@ -86,7 +86,7 @@ function createEnemy(name){
 			{x:432,y:478,w:46,h:59}
 		];
 	//中飞机的配置
-	var middleOption={w:46,h:63,moveY:80+Math.floor(Math.random()*200),hp:5,score:1000}
+	var middleOption={w:46,h:63,moveY:80+Math.floor(Math.random()*200),hp:3,score:1000}
 	
 	//大飞机的信息
 	var bigCells=[
@@ -102,7 +102,7 @@ function createEnemy(name){
 		];
 		
 	//大飞机的配置
-	var bigOption={w:110,h:170,moveY:70+Math.floor(Math.random()*200),hp:15,score:2000}
+	var bigOption={w:110,h:170,moveY:70+Math.floor(Math.random()*100),hp:7,score:2000}
 		
 	//判断飞机使用的图片对象集合
 	if(name=='smallEnemy'){
