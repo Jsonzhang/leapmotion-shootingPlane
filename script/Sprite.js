@@ -16,9 +16,6 @@ var Sprite=function(name,painter,behaviors){
 	if(painter!==undefined){
 		this.painter=painter;//外部传入的绘制器对象(该对象提供了对象的绘制功能)
 	}
-	
-	
-
 	this.left=0;//当前对象的横坐标
 	this.top=0;//当前对象的纵坐标
 	this.width=10;//当前对象的纵坐标

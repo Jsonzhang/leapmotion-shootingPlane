@@ -52,7 +52,7 @@
 		<script src="script/Enemy.js"></script>
 		<script src="script/plane.js"></script>
 		<script src="script/Bullet.js"></script>
-
+		<script src="script/bomb.js"></script>
 		<script src="script/leap.min.js"></script>
 	  
 	</head>
@@ -61,9 +61,22 @@
 		<div class="welcome">
 			<a href="#" class="begin"></a>
 		</div>
-		<canvas id="canvas" width="1366" height="764">浏览器不支持</canvas>
+		<canvas id="canvas" width="1024" height="764">浏览器不支持</canvas>
 		 <script>
 
+		 	var beHardGapTime = 10000; // 难度区分时间, 默认每十秒增加一次难度
+		 	var smallEnemyTimeGap = 1000,
+				middleEnemyTimeGap = 4000,
+				bigEnemyTimeGap = 7000; // 三种飞机分别出现的间隔时间,默认每一秒出现三架小飞机,每五秒出现两架中飞机,每十秒出现一架大飞机; 这三个值会随难度变大而减小.
+			var basespeed = 100; // 飞机的平均速度,在此基础上加随机数;这个值会随着难度变大而增大
+			var successScore = parseInt(window.location.search.substring(1)) || 50000;//成功的分数.
+
+			var bombTimeGap = 20000; //默认导弹二十秒出现一个
+
+
+
+			var bombNum = 0;
+			var bombTime = 0;
 
 		 	var canvas=document.getElementById('canvas');
 			var context=canvas.getContext('2d');
@@ -77,44 +90,19 @@
 			bullet.src="sound/bullet.mp3";
 			var gameoverSound = document.createElement("video");
 			gameoverSound.src="sound/game_over.mp3";
+			var successSound = document.createElement("video");
+			successSound.src = "sound/success.mp3";
+			var bombSound = document.createElement("video");
+			bombSound.src = "sound/use_bomb.mp3";
 
 			bgsound.play();
-
+			var spriteImg = new Image();
+				spriteImg.src='img/gameArts.png';
 			canvas.onclick = function(){
-				 canvas.webkitRequestFullScreen();
+				 //canvas.webkitRequestFullScreen();
 			}
     
 			
-
-			/*var point;
-
-			var welcome = document.getElementsByClassName("welcome")[0];
-			var beginbtn = document.getElementsByClassName("begin")[0];
-
-			beginbtn.onclick = function(){
-				mouse.style.position = "none";
-				welcome.style.position = "none";
-				canvas.style.position = "block";
-				play();
-			}*/
-
-			// document.body.appendChild(bg);
-
-			/*controller.loop(function(frame) {
-		        latestFrame = frame;
-
-
-		        if(latestFrame.pointables[0]){
-		        		point = {
-		        			x : (latestFrame.pointables[0].tipPosition[0] + 350) * (document.body.clientWidth + 100) / 700,
-		        			y : (700 - latestFrame.pointables[0].tipPosition[1]) * (document.body.clientHeight + 100) / 700
-		        		}
-		        			
-						mouse.style.left = (point.x - 10) + "px";
-						mouse.style.top  = (point.y - 10) + "px";
-		        }
-				
-		    });*/
 
 			var bgSprite=new BgSprite({w:canvas.width,h:canvas.height,My:30,url:'img/bg.png'});
 			
@@ -134,13 +122,16 @@
 			
 			var score=0,
 				targetX,
-				gameover;
+				gameover,
+				success;
 			var controller = new Leap.Controller({enableGestures: true});
-			var bombNum = 0;
+			var timestamp = 0; // 用于难度区分
+			
 
 
 		    controller.loop(function(frame) {
 		        latestFrame = frame;
+
 		        if(latestFrame.hands[0]){
 		        		
 		        		targetX = (latestFrame.hands[0].stabilizedPalmPosition[0] + 250) * (canvas.width+200) / 500;
@@ -150,6 +141,7 @@
 		        		if(targetY < 0 + plane.height/2 ){targetY = 0 + plane.height/2}
 		        		if(targetY > canvas.height - plane.height/2 ){targetY = canvas.height - plane.height/2}
 
+						//console.log(latestFrame.hands[0].sphereCenter);
 		        		point = {
 		        			x : targetX,
 		        			y : targetY
@@ -159,22 +151,27 @@
 						plane.top=point.y-plane.height/2;
 		        }
 
-
-		        if(latestFrame.pointables[0]){
-		        	console.log(latestFrame.pointables.length);
+		        if(latestFrame.pointables.length === 0 && bombNum > 0){
+					for(var j=0;j<sprites.length;j++){
+						//挑选不是子弹和我方飞机的对象(三种敌机)
+						bombSound.play();
+						if(sprites[j].name!='bullet' && sprites[j].name!='plane' && sprites[j].name!='bomb'){
+								sprites[j].hp = 0;
+						}
+					}
+					bombNum -= 1 ;
 		        }
 		    });
 			
 
 			
 			function animate(time){
-
 				//添加飞机操作
 				//小飞机添加
-				if(time-smallEnemyTime>1000){
+				if(time-smallEnemyTime>smallEnemyTimeGap){
 					//一次性添加三个小飞机
 					for(var i=0;i<3;i++){
-						sprites.push(createEnemy('smallEnemy'));
+						sprites.push(createEnemy('smallEnemy',basespeed));
 					}
 					//更新最后一次记录时间
 					smallEnemyTime=time;	
@@ -182,18 +179,18 @@
 				}
 				
 				//添加中飞机
-				if(time-middleEnemyTime>5000){
+				if(time-middleEnemyTime> middleEnemyTimeGap){
 					//添加中飞机
-					sprites.push(createEnemy('middleEnemy'));
-					sprites.push(createEnemy('middleEnemy'));
+					sprites.push(createEnemy('middleEnemy',basespeed));
+					sprites.push(createEnemy('middleEnemy',basespeed));
 					//更新最后一次记录时间
 					middleEnemyTime=time;
 				}
 				
 				//添加大飞机
-				if(time-bigEnemyTime>10000){
+				if(time-bigEnemyTime> bigEnemyTimeGap){
 					//添加中飞机
-					sprites.push(createEnemy('bigEnemy'));
+					sprites.push(createEnemy('bigEnemy',basespeed));
 					//更新最后一次记录时间
 					bigEnemyTime=time;
 				}
@@ -205,12 +202,30 @@
 					bullet.play();
 				}
 				
-				/*if(time-bombTime>40000){
+				if(time-bombTime > bombTimeGap){
 					sprites.push(createbomb());
 					bombTime=time;
-				}*/
+				}
+				if(time - timestamp >  beHardGapTime){
+					basespeed += 20;
+					if(bigEnemyTimeGap > 400){
+						smallEnemyTimeGap -= 100;
+					}
+					if(bigEnemyTimeGap > 2000){
+						middleEnemyTimeGap -= 500;
+					}
+					if(bigEnemyTimeGap > 4000){
+						bigEnemyTimeGap -= 1000;
+					}
+					timestamp = time;
+				}
+				if(score >= successScore){
+					success = true;
+				}
+
 				
-				
+
+
 				//更新当前背景的位置
 				bgSprite.update(context,time);
 				//绘制背景
@@ -219,13 +234,11 @@
 				//循环遍历所有精灵对象 更新行为
 				for(var i=0;i<sprites.length;i++){
 					sprites[i].update(context,time);
-					
-					
 					//判断是否有不可见的精灵对象
 					if(sprites[i].visible==false){
 						//在飞机对象删除之前把分数累加起来
-						if(sprites[i].name!='bullet' && sprites[i].name!='plane' ){//判断是否是飞机
-							score=score+sprites[i].score;
+						if(sprites[i].name!='bullet' && sprites[i].name!='plane' && sprites[i].name!='bomb' && sprites[i].beHit){//判断是否是飞机
+							score=score + sprites[i].score;
 						}
 						//删除不可见的对象
 						sprites.splice(i,1);
@@ -249,7 +262,7 @@
 									sprites[i].top<sprites[j].top + sprites[j].height - 30){
 								
 									//只有飞机气血>=1的情况下才减血
-									if(sprites[j].hp>=1){
+									if(sprites[j].hp>=1 && sprites[j].top > 0){
 										//讲当前飞机的气血-1
 										sprites[j].hp-=1;
 										//讲当前子弹变为不可见状态
@@ -263,7 +276,7 @@
 					var leftvalue,topvalue;
 					if(sprites[i].name=='plane'){
 						for(j=0;j<sprites.length;j++){
-							if(sprites[j].name!='bullet' && sprites[j].name!='plane' && sprites[j].name!='bomb'){
+							if(sprites[j].name!='bullet' && sprites[j].name!='plane'){
 								leftvalue = sprites[i].left - sprites[j].left;
 								if(leftvalue < 0){
 									leftvalue = Math.abs(leftvalue) < sprites[i].width - 20 ? true : false;
@@ -277,7 +290,11 @@
 									topvalue = Math.abs(topvalue) < sprites[j].height - 20 ? true : false;
 								}
 
-								if( leftvalue && topvalue && !sprites[j].dying){
+								if(leftvalue && topvalue && sprites[j].name === 'bomb' &&  !sprites[j].beGot){
+									bombNum +=1;
+									sprites[j].beGot = true;
+									sprites[j].visible = false;
+								}else if( leftvalue && topvalue && !sprites[j].dying){
 									sprites[i].hp = 0 ;
 									setTimeout(function(){
 										gameover = true;
@@ -292,7 +309,9 @@
 
 
 
-
+				for(var bn = 0 ; bn < bombNum ; bn++){
+					context.drawImage(spriteImg,48,620,40,35,bn * 40, canvas.height - 35 ,40,35);
+				}
 				
 				
 				
@@ -312,6 +331,13 @@
 					context.font='40px kroeger0853cyr';
 					context.fillText('Score: '+score,canvas.width/2-150,canvas.height/2 + 100);
 					return false;
+				}else if(success){
+					bgsound.pause();
+					successSound.play();
+					bgSprite.paint(context);
+					context.font='40px microsoft yahei';
+					context.fillText("恭喜你赢了",canvas.width/2-100,canvas.height/2 - 200);
+					context.fillRect(canvas.width / 2 - 100,canvas.height / 2 - 100,200,200);
 				}else{
 					window.requestAnimationFrame(animate);
 				}

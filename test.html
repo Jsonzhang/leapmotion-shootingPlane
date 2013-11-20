@@ -4,21 +4,64 @@
 		<meta charset="utf-8">
 		<title></title>
 		<script src="script/leap.min.js"></script>
-		<script>
-			var controller = new Leap.Controller({enableGestures: true});
-			var a = true;
-			controller.loop(function(frame) {
-		        latestFrame = frame;
-
-		       	if(lastestFrame.hands[0]){
-					console.log(frame);
-					a = false;
-				}
-		        
-		    });
-		</script>
+		<script src="script/Sprite.js"></script>
+		<script src="script/button.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+		<script type="text/javascript" src="script/jquery.tzineClock.js"></script>
+		<link rel="stylesheet" type="text/css" href="style/jquery.tzineClock.css" />
 	</head>
 	<body>
+		<canvas width="1000" height="800" id="canvas"></canvas>
+		<div id="fancyClock"></div>
+		<script>
+			$(document).ready(function(){
+				/* This code is executed after the DOM has been completely loaded */
+				$('#fancyClock').tzineClock();
+				var controller = new Leap.Controller({enableGestures: true});
+				var canvas=document.getElementById('canvas');
+				var context=canvas.getContext('2d');
+				var a;
 
+				var sprites =[];
+				sprites.push(createbutton("button"));
+				controller.loop(function(frame) {
+			        // draw(frame,10);
+					canvas.width = canvas.width;
+
+			        latestFrame = frame;
+
+			        if(latestFrame.hands[0]){
+						context.fillRect((latestFrame.hands[0].sphereCenter[0] + 250 )*1000/500,(latestFrame.hands[0].sphereCenter[2] + 250) *1000/500,10,10);
+			        }
+			    });
+			    function animate(time){
+			    	for(var i=0;i<sprites.length;i++){
+						sprites[i].paint(context);
+					}
+
+
+					window.requestAnimationFrame(animate);
+			    }
+				window.requestAnimationFrame(animate);
+				/*var bliv = canvas.width/700; 
+			    function draw(frame,radius){
+				  // set up our variables
+				  var pos, i, len;
+				  // loop over the pointables from the current frame
+				  for(i=0, len=frame.pointables.length; i < len; i++){
+
+				    // get the position of the tip of the current pointable as before
+				    pos = frame.pointables[i].tipPosition;
+				    // console.log(pos[0]-radius/2);
+				    // draw a circle centred at the tip
+				    ctx.beginPath();
+					ctx.fillStyle = "rgba("+ parseInt(Math.random()*256) +","+ parseInt(Math.random()*256) +","+ parseInt(Math.random()*256) +"," + Math.random() +")";
+				    ctx.arc((pos[0]-radius/2 + 350)*bliv,(pos[2]- radius/2 + 350)*bliv,radius,0,2*Math.PI);
+				    ctx.fill();
+				  }
+				}*/
+
+			});
+		</script>
 	</body>
 </html>
