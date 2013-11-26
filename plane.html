@@ -131,7 +131,6 @@
 
 		    controller.loop(function(frame) {
 		        latestFrame = frame;
-
 		        if(latestFrame.hands[0]){
 		        		
 		        		targetX = (latestFrame.hands[0].stabilizedPalmPosition[0] + 250) * (canvas.width+200) / 500;
@@ -160,6 +159,11 @@
 						}
 					}
 					bombNum -= 1 ;
+		        }
+
+
+		        if(gameover && latestFrame.pointables.length === 10){
+		        	location.reload();
 		        }
 		    });
 			
