@@ -1,8 +1,8 @@
 
 		 	var beHardGapTime = 10000; // 难度区分时间, 默认每十秒增加一次难度
-		 	var smallEnemyTimeGap = 1000,
-				middleEnemyTimeGap = 4000,
-				bigEnemyTimeGap = 7000; // 三种飞机分别出现的间隔时间,默认每一秒出现三架小飞机,每五秒出现两架中飞机,每十秒出现一架大飞机; 这三个值会随难度变大而减小.
+		 	var smallEnemyTimeGap = 2000,
+				middleEnemyTimeGap = 2000,
+				bigEnemyTimeGap = 3000; // 三种飞机分别出现的间隔时间,默认每一秒出现三架小飞机,每五秒出现两架中飞机,每十秒出现一架大飞机; 这三个值会随难度变大而减小.
 			var basespeed = 100; // 飞机的平均速度,在此基础上加随机数;这个值会随着难度变大而增大
 
 
@@ -33,7 +33,11 @@
 			successSound.src = "sound/success.mp3";
 			var bombSound = document.createElement("video");
 			bombSound.src = "sound/use_bomb.mp3";
+			var yixunSound = document.createElement("video");
+			yixunSound.src = "sound/yixun.mp3";
 
+
+			bgsound.loop= true;
 			bgsound.play();
 			var spriteImg = new Image();
 				spriteImg.src='img/sprite.png';
@@ -45,8 +49,58 @@
 				 //canvas.webkitRequestFullScreen();
 			}
     
-			
-
+			var direction = "left";
+			var leftCells = [
+				{x:101,y:0,w:60,h:124},
+				{x:101,y:0,w:60,h:124},
+				{x:101,y:0,w:60,h:124},
+				{x:101,y:0,w:60,h:124},
+				{x:101,y:0,w:60,h:124},
+				{x:101,y:0,w:60,h:124},
+				{x:166,y:0,w:60,h:124},
+				{x:166,y:0,w:60,h:124},
+				{x:166,y:0,w:60,h:124},
+				{x:166,y:0,w:60,h:124},
+				{x:166,y:0,w:60,h:124},
+				{x:166,y:0,w:60,h:124},
+				{x:230,y:0,w:60,h:124},
+				{x:230,y:0,w:60,h:124},
+				{x:230,y:0,w:60,h:124},
+				{x:230,y:0,w:60,h:124},
+				{x:230,y:0,w:60,h:124},
+				{x:230,y:0,w:60,h:124},
+				{x:298,y:0,w:60,h:124},
+				{x:298,y:0,w:60,h:124},
+				{x:298,y:0,w:60,h:124},
+				{x:298,y:0,w:60,h:124},
+				{x:298,y:0,w:60,h:124},
+				{x:298,y:0,w:60,h:124}
+			];
+			var rightCells = [
+				{x:101,y:133,w:60,h:124},
+				{x:101,y:133,w:60,h:124},
+				{x:101,y:133,w:60,h:124},
+				{x:101,y:133,w:60,h:124},
+				{x:101,y:133,w:60,h:124},
+				{x:101,y:133,w:60,h:124},
+				{x:166,y:133,w:60,h:124},
+				{x:166,y:133,w:60,h:124},
+				{x:166,y:133,w:60,h:124},
+				{x:166,y:133,w:60,h:124},
+				{x:166,y:133,w:60,h:124},
+				{x:230,y:133,w:60,h:124},
+				{x:230,y:133,w:60,h:124},
+				{x:230,y:133,w:60,h:124},
+				{x:230,y:133,w:60,h:124},
+				{x:230,y:133,w:60,h:124},
+				{x:230,y:133,w:60,h:124},
+				{x:298,y:133,w:60,h:124},
+				{x:298,y:133,w:60,h:124},
+				{x:298,y:133,w:60,h:124},
+				{x:298,y:133,w:60,h:124},
+				{x:298,y:133,w:60,h:124},
+				{x:298,y:133,w:60,h:124}
+			]
 			var bgSprite=new BgSprite({w:canvas.width,h:canvas.height,My:basespeed,url:'img/bg.png'});
 			
 		
@@ -54,7 +108,7 @@
 	    	var latestFrame = null;
 	    	var parseNow = false;
 			var sprites=[];
-			var plane=createPlane();
+			var plane=createPeople();
 
 			sprites.push(plane);
 					
@@ -69,40 +123,143 @@
 				gameover,
 				success,
 				litterSuccess,
-				yixunGift;
+				yixunGift,
+				pointNow = 0;
 			var controller = new Leap.Controller({enableGestures: true});
 			var timestamp = 0; // 用于难度区分
 			var gameovering = false;
 
 
+
 			var QRcode = [
-				{ "name" :"Transshow 权尚 小胖子 创意礼品U盘 8G 银色" ,  "src" : "QRcode/1.png"},
-				{ "name" :"kingston 金士顿 16GB Micro SDHC（高容量TF）Class4 存储卡" ,  "src" : "QRcode/2.png"},
-				{ "name" :"Netgear 美国网件 WNR2000 300M 无线宽带路由器" , "src" :  "QRcode/3.png"},
-				{ "name" :"Targus 泰格斯 LegendIQ16＂电脑背包 TSB705AP 黑色" ,  "src" : "QRcode/4.png"},
-				{ "name" :"倍斯特 强尼思BST-0109 移动电源 10000毫安 象牙白 礼盒装" ,  "src" : "QRcode/5.png"},
-				{ "name" :"维多利亚旅行者 V3002 时尚休闲商务休闲包 黑色" ,  "src" : "QRcode/6.png"},
-				{ "name" :"IBM P2600 原装双肩电脑包 15英寸 黑色" ,  "src" : "QRcode/7.png"},
-				{ "name" :"POVOS 奔腾 PB0271Q 旋转式剃须刀" ,  "src" : "QRcode/8.png"},
-				{ "name" :"Netcore 磊科 NW710 300M 无线路由器" , "src" :  "QRcode/9.png"},
-				{ "name" :"TOTOLINK N300UM USB无线网卡" ,  "src" : "QRcode/10.png"},
-				{ "name" :"Logitech 罗技 M185 无线鼠标 黑色" , "src" :  "QRcode/11.png"},
-				{ "name" :"APC 施耐德 P63-CNX702 防浪涌总控 6位插座 3米(918焦耳)" ,  "src" : "QRcode/12.png"},
-				{ "name" :"TP 飞毛腿 移动106 大容量移动电源 10400mAh" , "src" :  "QRcode/13.png"},
-				{ "name" :"HYUNDAI 现代 H11 便携式插卡迷你音箱 老人FM收音机唱戏机 晨练散步外放MP3播放小音箱 蓝色" ,  "src" : "QRcode/14.png"},
-				{ "name" :"全网底价 Johnson 强生 婴儿牛奶沐浴露 1L + 婴儿牛奶沐浴露 300ml" ,  "src" : "QRcode/15.png"},
-				{ "name" :"飞科 FH6255 恒温电吹风" ,  "src" : "QRcode/16.png"},
-				{ "name" :"Canbo 康宝 电热水壶" ,  "src" : "QRcode/17.png"}
+				{ 
+					"name" :"Transshow 权尚 小胖子 创意礼品U盘 8G 银色" ,  
+					"src" : "QRcode/1.png",
+					"itemImg" : "item/1.png",
+					"activityprice" : 29.9,
+					"price": 34.9
+				},
+				{ 
+					"name" :"kingston 金士顿 16GB Micro SDHC（高容量TF）Class4 存储卡" ,  
+					"src" : "QRcode/2.png",
+					"itemImg" : "item/2.png",
+					"activityprice" : 59.9,
+					"price": 64.9
+				},
+				{ 
+					"name" :"Netgear 美国网件 WNR2000 300M 无线宽带路由器" , 
+					"src" :  "QRcode/3.png",
+					"itemImg" : "item/3.png",
+					"activityprice" : 99,
+					"price": 138
+				},
+				{ 
+					"name" :"Targus 泰格斯 LegendIQ16＂电脑背包 TSB705AP 黑色" ,  
+					"src" : "QRcode/4.png",
+					"itemImg" : "item/4.png",
+					"activityprice" : 159,
+					"price": 234
+				},
+				{ 
+					"name" :"倍斯特 强尼思BST-0109 移动电源 10000毫安 象牙白 礼盒装" , 
+					"src" : "QRcode/5.png",
+					"itemImg" : "item/5.png",
+					"activityprice" : 59,
+					"price": 99
+				},
+				{ 
+					"name" :"维多利亚旅行者 V3002 时尚休闲商务休闲包 黑色" ,  
+					"src" : "QRcode/6.png",
+					"itemImg" : "item/6.png",
+					"activityprice" : 38,
+					"price": 59
+				},
+				{ 
+					"name" :"IBM P2600 原装双肩电脑包 15英寸 黑色" ,  
+					"src" : "QRcode/7.png",
+					"itemImg" : "item/7.png",
+					"activityprice" : 89,
+					"price": 149
+				},
+				{ 
+					"name" :"POVOS 奔腾 PB0271Q 旋转式剃须刀" ,  
+					"src" : "QRcode/8.png",
+					"itemImg" : "item/8.png",
+					"activityprice" : 59,
+					"price": 89
+				},
+				{ 
+					"name" :"Netcore 磊科 NW710 300M 无线路由器" , 
+					"src" :  "QRcode/9.png",
+					"itemImg" : "item/9.png",
+					"activityprice" : 46,
+					"price": 55
+				},
+				{ 
+					"name" :"TOTOLINK N300UM USB无线网卡" ,  
+					"src" : "QRcode/10.png",
+					"itemImg" : "item/10.png",
+					"activityprice" : 29,
+					"price": 49
+				},
+				{ 
+					"name" :"Logitech 罗技 M185 无线鼠标 黑色" , 
+					"src" :  "QRcode/11.png",
+					"itemImg" : "item/11.png",
+					"activityprice" : 65,
+					"price": 69
+				},
+				{ 
+					"name" :"APC 施耐德 P63-CNX702 防浪涌总控 6位插座 3米(918焦耳)" ,  
+					"src" : "QRcode/12.png",
+					"itemImg" : "item/12.png",
+					"activityprice" : 49,
+					"price": 99
+				},
+				{ 
+					"name" :"TP 飞毛腿 移动106 大容量移动电源 10400mAh" , 
+					"src" :  "QRcode/13.png",
+					"itemImg" : "item/13.png",
+					"activityprice" : 98,
+					"price": 149
+				},
+				{ 
+					"name" :"HYUNDAI 现代 H11 便携式插卡迷你音箱 老人FM收音机唱戏机 晨练散步外放MP3播放小音箱 蓝色" ,  
+					"src" : "QRcode/14.png",
+					"itemImg" : "item/14.png",
+					"activityprice" : 29,
+					"price": 49
+				},
+				{ 
+					"name" :"全网底价 Johnson 强生 婴儿牛奶沐浴露 1L + 婴儿牛奶沐浴露 300ml" ,  
+					"src" : "QRcode/15.png",
+					"itemImg" : "item/15.png",
+					"activityprice" : 34.9,
+					"price": 40
+				},
+				{ 
+					"name" :"飞科 FH6255 恒温电吹风" ,  
+					"src" : "QRcode/16.png",
+					"itemImg" : "item/16.png",
+					"activityprice" : 29,
+					"price": 39
+				},
+				{ 
+					"name" :"Canbo 康宝 电热水壶" , 
+					"src" : "QRcode/17.png",
+					"itemImg" : "item/17.png",
+					"activityprice" : 29,
+					"price": 49
+				}
 			]
 
 			var QRcodeImg = new Image();
 				yixunGift = QRcode[parseInt(Math.random()*17)];
-				QRcodeImg.src= yixunGift.src;
+				QRcodeImg.src= yixunGift.itemImg;
 
 		    controller.loop(function(frame) {
 		        latestFrame = frame;
 		        if(latestFrame.hands[0]){
-		        		
 		        		targetX = (latestFrame.hands[0].stabilizedPalmPosition[0] + 250) * (canvas.width+200) / 500;
 		        		targetY =  (latestFrame.hands[0].stabilizedPalmPosition[2] + 250) * (canvas.height+200) / 500;
 		        		if(targetX < 0 + plane.width/2  + 50 ){targetX = 0 + plane.width/2 + 50 }
@@ -119,13 +276,22 @@
 							plane.left=point.x-plane.width/2;
 							plane.top=point.y-plane.height/2;
 						}
+
+						if(pointNow - latestFrame.hands[0].stabilizedPalmPosition[0] < 0){
+							direction = "right";
+						}else{
+							direction = "left";
+						}
+						pointNow = latestFrame.hands[0].stabilizedPalmPosition[0];
+
+
 		        }
 		        if(latestFrame.pointables.length === 0 && bombNum > 0 &&  new Date() - bombtimestamp > 3000){
 		        	bombtimestamp = new Date();
 					for(var j=0;j<sprites.length;j++){
 						//挑选不是子弹和我方飞机的对象(三种敌机)
 						bombSound.play();
-						if(sprites[j].name!='bullet' && sprites[j].name!='plane' && sprites[j].name!='bomb'){
+						if(sprites[j].name!='deliveryman'){
 								sprites[j].hp = 0;
 						}
 					}
@@ -141,31 +307,25 @@
 
 			
 			function animate(time){
-				//添加飞机操作
-				//小飞机添加
 
 				if(time-smallEnemyTime>smallEnemyTimeGap){
-					//一次性添加三个小飞机
-						sprites.push(createEnemy('smallEnemy',basespeed));
-					//更新最后一次记录时间
+					sprites.push(createEnemy('roadblock',basespeed));
+					sprites.push(createEnemy('roadblock2',basespeed));
 					smallEnemyTime=time;	
-	
 				}
 				score += 1;
 				//添加中飞机
 				if(time-middleEnemyTime> middleEnemyTimeGap){
 					//添加中飞机
-					sprites.push(createEnemy('middleEnemy',basespeed));
-					sprites.push(createEnemy('middleEnemy',basespeed));
 					//更新最后一次记录时间
+					sprites.push(createEnemy('dog',basespeed));
 					middleEnemyTime=time;
 				}
 				
 				//添加大飞机
 				if(time-bigEnemyTime> bigEnemyTimeGap){
 					//添加中飞机
-					sprites.push(createEnemy('bigEnemy',basespeed));
-					sprites.push(createEnemy('dog',basespeed));
+					sprites.push(createEnemy('car',basespeed));
 					//更新最后一次记录时间
 					bigEnemyTime=time;
 				}
@@ -175,20 +335,20 @@
 					sprites.push(createbomb(basespeed));
 					bombTime=time;
 				}
-				/*
+				
 				if(time - timestamp >  beHardGapTime){
-					basespeed += 20;
-					if(bigEnemyTimeGap > 400){
+					// basespeed += 20;
+					if(smallEnemyTimeGap > 400){
 						smallEnemyTimeGap -= 100;
 					}
-					if(bigEnemyTimeGap > 2000){
+					if(middleEnemyTimeGap > 2000){
 						middleEnemyTimeGap -= 500;
 					}
 					if(bigEnemyTimeGap > 4000){
 						bigEnemyTimeGap -= 1000;
 					}
 					timestamp = time;
-				}*/
+				}
 				if(score >= successScore){
 					success = true;
 				}
@@ -207,50 +367,26 @@
 				
 				//循环遍历所有精灵对象 更新行为
 				for(var i=0;i<sprites.length;i++){
+					if(sprites[i].name == "deliveryman" &&  sprites[sprites.length-1].name !="deliveryman"){
+						sprites[sprites.length-1] = sprites.splice(i,1)[0];
+					}
 					sprites[i].update(context,time);
 					//判断是否有不可见的精灵对象
 					if(sprites[i].visible==false){
-						//在飞机对象删除之前把分数累加起来
-						if(sprites[i].name!='bullet' && sprites[i].name!='plane' && sprites[i].name!='bomb' && sprites[i].beHit){//判断是否是飞机
+						/*//在飞机对象删除之前把分数累加起来
+						if(sprites[i].name!='bullet' && sprites[i].name!='deliveryman' && sprites[i].name!='bomb' && sprites[i].beHit){//判断是否是飞机
 							score=score + sprites[i].score;
-						}
+						}*/
 						//删除不可见的对象
 						sprites.splice(i,1);
 					}	
 				}
 				//循环遍历所有精灵对象 绘制对象
 				for(var i=0;i<sprites.length;i++){
-					//判断子弹是否击中敌机
-					if(sprites[i].name=='bullet'){
-						for(var j=0;j<sprites.length;j++){
-							//挑选不是子弹和我方飞机的对象(三种敌机)
-							if(sprites[j].name!='bullet' && sprites[j].name!='plane' && sprites[j].name!='bomb'){
-								//判断子弹和每个敌机的位置
-								//子弹的横坐标>飞机左侧位置
-								if(sprites[i].left>sprites[j].left &&
-									//子弹的横坐标<飞机右侧位置（右侧=左侧+宽度）
-									sprites[i].left<sprites[j].left+sprites[j].width &&
-									//子弹的纵坐标>顶部位置
-									sprites[i].top>sprites[j].top &&
-									//子弹纵坐标<底部位置
-									sprites[i].top<sprites[j].top + sprites[j].height - 30){
-								
-									//只有飞机气血>=1的情况下才减血
-									if(sprites[j].hp>=1 && sprites[j].top > 0){
-										//讲当前飞机的气血-1
-										sprites[j].hp-=1;
-										//讲当前子弹变为不可见状态
-										sprites[i].visible=false;
-									}
-								}
-							
-							}
-						}
-					}
 					var leftvalue,topvalue;
-					if(sprites[i].name=='plane'){
+					if(sprites[i].name=='deliveryman'){
 						for(j=0;j<sprites.length;j++){
-							if(sprites[j].name!='bullet' && sprites[j].name!='plane'){
+							if(sprites[j].name!='deliveryman'){
 								leftvalue = sprites[i].left - sprites[j].left;
 								if(leftvalue < 0){
 									leftvalue = Math.abs(leftvalue) < sprites[i].width - 20 ? true : false;
@@ -278,6 +414,111 @@
 							}
 						}
 					}
+					if(sprites[i].name=='roadblock'){
+						for(j=0;j<sprites.length;j++){
+							if(sprites[j].name!='roadblock' && sprites[j].name != 'dog'){
+								leftvalue = sprites[i].left - sprites[j].left;
+								if(leftvalue < 0){
+									leftvalue = Math.abs(leftvalue) < sprites[i].width - 20 ? true : false;
+								}else{
+									leftvalue = Math.abs(leftvalue) < sprites[j].width - 20 ? true : false;
+								}
+								topvalue = sprites[i].top - sprites[j].top;
+								if(topvalue < 0){
+									topvalue = Math.abs(topvalue) < sprites[i].height - 20 ? true : false;
+								}else{
+									topvalue = Math.abs(topvalue) < sprites[j].height - 20 ? true : false;
+								}
+
+								if( leftvalue && topvalue){
+									sprites[i].painter.cells = createEnemy("roadblock2").painter.cells ;
+								}
+							}
+						}
+					}
+					if(sprites[i].name=='dog'){
+						for(j=0;j<sprites.length;j++){
+							if(sprites[j].name != 'dog' && sprites[j].name != 'bomb' && sprites[j].name != 'deliveryman'){
+								leftvalue = sprites[i].left - sprites[j].left;
+								if(leftvalue < 0){
+									leftvalue = Math.abs(leftvalue) < sprites[i].width - 20 ? true : false;
+								}else{
+									leftvalue = Math.abs(leftvalue) < sprites[j].width - 20 ? true : false;
+								}
+								topvalue = sprites[i].top - sprites[j].top;
+								if(topvalue < 0){
+									topvalue = Math.abs(topvalue) < sprites[i].height - 20 ? true : false;
+								}else{
+									topvalue = Math.abs(topvalue) < sprites[j].height - 20 ? true : false;
+								}
+
+								if( leftvalue && topvalue){
+									sprites[i].moveX = 0 ;
+									sprites[i].left += 17 ;
+									sprites[i].painter.cells = [
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:537,y:104,w:57,h:49},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45},
+										{x:367,y:106,w:49,h:45}
+									];
+								}
+							}
+						}
+					}
+					if(sprites[i].name=='roadblock'){
+						for(j=0;j<sprites.length;j++){
+							if(sprites[j].name =='roadblock2' || sprites[j].name =='roadblock' && i!=j){
+								leftvalue = sprites[i].left - sprites[j].left;
+								if(leftvalue < 0){
+									leftvalue = Math.abs(leftvalue) < sprites[i].width - 20 ? true : false;
+								}else{
+									leftvalue = Math.abs(leftvalue) < sprites[j].width - 20 ? true : false;
+								}
+								topvalue = sprites[i].top - sprites[j].top;
+								if(topvalue < 0){
+									topvalue = Math.abs(topvalue) < sprites[i].height - 20 ? true : false;
+								}else{
+									topvalue = Math.abs(topvalue) < sprites[j].height - 20 ? true : false;
+								}
+
+								if( leftvalue && topvalue){
+									sprites.splice(j,1) ;
+								}
+							}
+						}
+					}
 					sprites[i].paint(context);
 				}
 
@@ -299,16 +540,18 @@
 				if(gameover){
 					if(litterSuccess){
 						bgsound.pause();
-						successSound.play();
+						yixunSound.play();
 						context.rect( 0 , 0 , canvas.width , canvas.height);
-						context.fillStyle="rgba(255, 255, 255, 0.5)";
+						context.fillStyle="rgba(255, 255, 255, 0.7)";
 						context.fill();
-						context.fillStyle="rgba(0, 0, 0 ,1)";
-						context.font='80px microsoft yahei';
-						context.fillText("易迅优惠码,赶快扫一下吧!",50,canvas.height/2 - 200);
-						context.fillText(yixunGift.name,50,canvas.height/2 - 100);
-						context.drawImage(QRcodeImg,0,0,230,230,canvas.width / 2 - 100,canvas.height / 2 - 100,230,230);
-						context.drawImage(spriteImg,366,0,77,83,canvas.width/2 - 20, canvas.height/2 + 150 ,77,83);
+						// context.fillStyle="#000";
+						// context.font='48px microsoft yahei';
+						// context.fillText("易迅优惠码,赶快扫一下吧!",230,550);
+						// context.fillStyle="#1c6ec6";
+						// context.font='30px microsoft yahei';
+						// wrapText(context,yixunGift.name,230,650,590,50);
+						context.drawImage(spriteImg,0,370,553,410,100,150,553,410);
+						context.drawImage(QRcodeImg,0,0,500,400,450,150,500,400);
 						return false;
 					}
 					bgsound.pause();
@@ -331,11 +574,32 @@
 					context.fill();
 					context.fillStyle="rgba(0, 0, 0, 1)";
 					context.font='40px microsoft yahei';
-					context.fillText("恭喜你赢得QQtoy一个!!!",canvas.width/2-220,canvas.height/2 - 280);
-					context.drawImage(qqtoyImg,0,0,1000,541,0, 150 ,1000,541);
+					context.fillText("恭喜你赢得QQtoy一个!!!",canvas.width/2-220,canvas.height/2 - 100);
+					context.drawImage(qqtoyImg,0,0,500,270,250, 300 ,500,270);
 				}else{
 					window.requestAnimationFrame(animate);
 				}
 			}
 			
 			window.requestAnimationFrame(animate);
+
+
+			function wrapText(context, text, x, y, maxWidth, lineHeight) {
+		        var words = text.split(' ');
+		        var line = '';
+
+		        for(var n = 0; n < words.length; n++) {
+		          var testLine = line + words[n] + ' ';
+		          var metrics = context.measureText(testLine);
+		          var testWidth = metrics.width;
+		          if (testWidth > maxWidth && n > 0) {
+		            context.fillText(line, x, y);
+		            line = words[n] + ' ';
+		            y += lineHeight;
+		          }
+		          else {
+		            line = testLine;
+		          }
+		        }
+		        context.fillText(line, x, y);
+		    }

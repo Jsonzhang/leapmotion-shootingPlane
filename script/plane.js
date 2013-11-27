@@ -83,7 +83,7 @@ Blinking.prototype= {
 
 		
 //创建我方飞机
-function createPlane(){
+function createPeople(){
 	//我方飞机的图像信息
 	var cells=[
 		{x:101,y:0,w:60,h:124},
@@ -98,7 +98,6 @@ function createPlane(){
 		{x:166,y:0,w:60,h:124},
 		{x:166,y:0,w:60,h:124},
 		{x:166,y:0,w:60,h:124},
-		{x:230,y:0,w:60,h:124},
 		{x:230,y:0,w:60,h:124},
 		{x:230,y:0,w:60,h:124},
 		{x:230,y:0,w:60,h:124},
@@ -121,7 +120,7 @@ function createPlane(){
 	//我方飞机的配置
 	var option={hp:1,w:60,h:124};
 	//创建我方飞机
-	var plane=new Sprite('plane',new SpritePainter('img/sprite.png',cells),[new PlaneBomb()]);
+	var plane=new Sprite('deliveryman',new SpritePainter('img/sprite.png',cells),[new PlaneBomb()]);
 	//初始化设置
 	plane.hp=option.hp;
 	plane.left=(canvas.width - option.w)/2;

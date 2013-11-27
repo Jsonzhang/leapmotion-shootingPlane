@@ -73,7 +73,7 @@ function createbomb(basespeed){
 	//实例化精灵对象
 	var bomb=new Sprite("bomb",new SpritePainter('img/sprite.png',bombcome),[new Bombing(),new flybomb()]);
 	//属性初始化
-	bomb.left=Math.floor(Math.random()*canvas.width)-bomb.width;
+	bomb.left=50 + Math.floor(Math.random()*(canvas.width - 100 - 22));
 	bomb.top=-bombOption.h;
 	bomb.width=bombOption.w;
 	bomb.height=bombOption.h;

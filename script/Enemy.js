@@ -52,9 +52,9 @@ EnemyBomb.prototype={
 			}
 			sprite.painter.advance();
 			//判断 如果当前飞机死亡hp=0 且爆炸效果播放完毕 删除该飞机
-			if(sprite.painter.cellIndex==sprite.painter.cells.length-1){
+			// if(sprite.painter.cellIndex==sprite.painter.cells.length-1){
 				sprite.visible=false;
-			}
+			// }
 			//重新记录最后一次执行时间
 			this.lastEnemyBombTime=time;
 		}
@@ -81,13 +81,11 @@ function createEnemy(name,basespeed){
 	//中飞机的配置
 	var middleOption={w:33,h:26,moveY:basespeed,moveX:0,hp:3,score:3000}
 	
-	//大飞机的信息
-	var bigCells=[
+	var carCells=[
 			{x:0,y:0,w:90,h:166}//正常飞行
 		];
 		
-	//大飞机的配置
-	var bigOption={w:90,h:166,moveY:basespeed + Math.floor(Math.random()*300),moveX:0,hp:7,score:10000}
+	var carOption={w:90,h:166,moveY:basespeed + 100 + Math.floor(Math.random()*200),moveX:0,hp:7,score:10000}
 
 	
 
@@ -131,25 +129,25 @@ function createEnemy(name,basespeed){
 	];
 		
 	//大飞机的配置
-	var dogOption={w:49,h:45,moveY:basespeed,moveX:100,hp:7,score:7}
+	var dogOption={w:49,h:45,moveY:basespeed,moveX:50,hp:7,score:7}
 	//判断飞机使用的图片对象集合
-	if(name=='smallEnemy'){
+	if(name=='roadblock'){
 		var cells=smallCells;
 		var option=smallOption;
-	}else if(name=='middleEnemy'){
+	}else if(name=='roadblock2'){
 		var cells=middleCells;
 		var option=middleOption;
 	}else if(name=='dog'){
 		var cells=dogCells;
 		var option=dogOption;
 	}else{
-		var cells=bigCells;
-		var option=bigOption;
+		var cells=carCells;
+		var option=carOption;
 	}
 	//实例化精灵对象
 	var Enemy=new Sprite(name,new SpritePainter('img/sprite.png',cells),[new EnemyFly(),new EnemyBomb()]);
 	//属性初始化
-	Enemy.left = 50 + Math.floor(Math.random()*(canvas.width - 50  - Enemy.width/2)) + Enemy.width/2;
+	Enemy.left = 50 + Math.floor(Math.random()*(canvas.width - 110  - option.w));
 	if(name=="dog"){
 		Enemy.left = canvas.width - 50  - Enemy.width/2;
 	}
