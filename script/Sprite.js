@@ -8,7 +8,7 @@
 @param behaviors ：当前对象的行为数组
 */
 
-var Sprite=function(name,painter,behaviors){
+var Sprite=function(name,painter,behaviors,gamemove){
 	if(name!==undefined){
 		this.name=name;//当前对象的名称 (可以不设置)
 	}

@@ -25,7 +25,7 @@ BgSprite.prototype={
 	//更新对象状态  比如位置移动
 	update:function(context,time){//time由 动画播放方法 requestNextAnimationFrame提供
 		//判断当前时间是否==0
-		if(this.lastBgTime!=0){
+		if(this.lastBgTime!=0 && !gameovering){
 			//如果lastBgTime!=0 不是第一帧
 			var frameTime=time-this.lastBgTime;
 			

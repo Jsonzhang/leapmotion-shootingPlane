@@ -11,17 +11,21 @@ var EnemyFly=function(){
 EnemyFly.prototype={
 	execute:function(sprite,context,time){
 		//检测动画是否开始运行(时间)
-		if(this.lastEnemyFlyTime!==0){
+		if(this.lastEnemyFlyTime!==0 && !gameovering){
 			//更新飞机的位置 top坐标
 			sprite.top=sprite.top+sprite.moveY/1000*(time-this.lastEnemyFlyTime);
+			sprite.left=sprite.left-sprite.moveX/1000*(time-this.lastEnemyFlyTime);
 			//判断当前飞机的位置是否飞出屏幕，如果已经离开屏幕  隐藏
-			if(sprite.top>context.canvas.height){
+			if(sprite.top>context.canvas.height || sprite.left < 0){
 				sprite.visible=false;
 				sprite.beHit = false;
 			}	
 		}
 		//记录每次动画的最后一次时间
 		this.lastEnemyFlyTime=time;
+	},
+	update: function(sprite,context,time){
+		sprite.left=sprite.left + sprite.moveX/1000*(time-this.lastEnemyFlyTime);
 	}
 }
 
@@ -39,6 +43,7 @@ var EnemyBomb=function(){
 EnemyBomb.prototype={
 	execute:function(sprite,context,time){
 		//轮播每一个图片
+		sprite.painter.advance();
 		if(time-this.lastEnemyBombTime > this.cycle && sprite.hp == 0){
 			//更新当前绘图使用的图片
 			sprite.dying = true;
@@ -64,41 +69,69 @@ EnemyBomb.prototype={
 function createEnemy(name,basespeed){
 	//小飞机的信息
 	var smallCells=[
-			{x:80,y:655,w:35,h:30},//正常飞行
-			{x:45,y:655,w:35,h:30},					
-			{x:418,y:731,w:40,h:30},					
-			{x:473,y:723,w:40,h:50}
+			{x:19,y:192,w:30,h:34}//正常飞行
 		];
 	//小飞机的配置
-	var smallOption={w:40,h:50,moveY:basespeed + Math.floor(Math.random()*200),hp:1,score:500}
+	var smallOption={w:30,h:34,moveY:basespeed,moveX:0,hp:1,score:500}
 		
 	//中飞机的信息
 	var middleCells=[
-			{x:0,y:569,w:46,h:60},//正常飞行
-			{x:432,y:413,w:46,h:61},
-			{x:432,y:538,w:46,h:63},
-			{x:432,y:599,w:46,h:58},
-			{x:432,y:478,w:46,h:59}
+			{x:29,y:251,w:33,h:26}//正常飞行
 		];
 	//中飞机的配置
-	var middleOption={w:46,h:63,moveY:basespeed - 20 + Math.floor(Math.random()*200),hp:3,score:3000}
+	var middleOption={w:33,h:26,moveY:basespeed,moveX:0,hp:3,score:3000}
 	
 	//大飞机的信息
 	var bigCells=[
-			{x:110,y:736,w:110,h:170},//正常飞行
-			{x:221,y:857,w:110,h:170},
-			{x:310,y:680,w:110,h:170},
-			{x:0,y:754,w:110,h:170},
-			{x:322,y:340,w:110,h:170},										
-			{x:322,y:170,w:110,h:170},										
-			{x:322,y:340,w:110,h:170},										
-			{x:322,y:510,w:110,h:170},									
-			{x:322,y:0,w:110,h:170}
+			{x:0,y:0,w:90,h:166}//正常飞行
 		];
 		
 	//大飞机的配置
-	var bigOption={w:110,h:170,moveY:basespeed - 30 + Math.floor(Math.random()*100),hp:7,score:10000}
+	var bigOption={w:90,h:166,moveY:basespeed + Math.floor(Math.random()*300),moveX:0,hp:7,score:10000}
+
+	
+
+	var dogCells=[
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:421,y:105,w:54,h:47},
+		{x:421,y:105,w:54,h:47},
+		{x:421,y:105,w:54,h:47},
+		{x:421,y:105,w:54,h:47},
+		{x:483,y:107,w:48,h:45},
+		{x:483,y:107,w:48,h:45},
+		{x:483,y:107,w:48,h:45},
+		{x:483,y:107,w:48,h:45},
+		{x:421,y:105,w:54,h:47},
+		{x:421,y:105,w:54,h:47},
+		{x:421,y:105,w:54,h:47},
+		{x:421,y:105,w:54,h:47},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:537,y:104,w:57,h:49},
+		{x:537,y:104,w:57,h:49},
+		{x:537,y:104,w:57,h:49},
+		{x:537,y:104,w:57,h:49},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:537,y:104,w:57,h:49},
+		{x:537,y:104,w:57,h:49},
+		{x:537,y:104,w:57,h:49},
+		{x:537,y:104,w:57,h:49},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45},
+		{x:367,y:106,w:49,h:45}
+	];
 		
+	//大飞机的配置
+	var dogOption={w:49,h:45,moveY:basespeed,moveX:100,hp:7,score:7}
 	//判断飞机使用的图片对象集合
 	if(name=='smallEnemy'){
 		var cells=smallCells;
@@ -106,14 +139,20 @@ function createEnemy(name,basespeed){
 	}else if(name=='middleEnemy'){
 		var cells=middleCells;
 		var option=middleOption;
+	}else if(name=='dog'){
+		var cells=dogCells;
+		var option=dogOption;
 	}else{
 		var cells=bigCells;
 		var option=bigOption;
 	}
 	//实例化精灵对象
-	var Enemy=new Sprite(name,new SpritePainter('img/gameArts.png',cells),[new EnemyFly(),new EnemyBomb()]);
+	var Enemy=new Sprite(name,new SpritePainter('img/sprite.png',cells),[new EnemyFly(),new EnemyBomb()]);
 	//属性初始化
-	Enemy.left=Math.floor(Math.random()*canvas.width)-Enemy.width;
+	Enemy.left = 50 + Math.floor(Math.random()*(canvas.width - 50  - Enemy.width/2)) + Enemy.width/2;
+	if(name=="dog"){
+		Enemy.left = canvas.width - 50  - Enemy.width/2;
+	}
 	Enemy.top=-option.h;
 	Enemy.width=option.w;
 	Enemy.height=option.h;
@@ -124,6 +163,8 @@ function createEnemy(name,basespeed){
 	Enemy.sound = document.createElement("video");
 	Enemy.sound.src = "sound/enemy1_down.mp3";
 	Enemy.beHit = true;
+	Enemy.moveX = option.moveX;
+	Enemy.sty = "emery";
 	//返回精灵对象
 	return Enemy;
 }
