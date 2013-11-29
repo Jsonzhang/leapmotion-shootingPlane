@@ -149,7 +149,7 @@ function createEnemy(name,basespeed){
 	//属性初始化
 	Enemy.left = 50 + Math.floor(Math.random()*(canvas.width - 110  - option.w));
 	if(name=="dog"){
-		Enemy.left = canvas.width - 50  - Enemy.width/2;
+		Enemy.left = canvas.width - 50  - option.w;
 	}
 	Enemy.top=-option.h;
 	Enemy.width=option.w;

@@ -1,8 +1,8 @@
 
 		 	var beHardGapTime = 10000; // 难度区分时间, 默认每十秒增加一次难度
-		 	var smallEnemyTimeGap = 2000,
-				middleEnemyTimeGap = 2000,
-				bigEnemyTimeGap = 3000; // 三种飞机分别出现的间隔时间,默认每一秒出现三架小飞机,每五秒出现两架中飞机,每十秒出现一架大飞机; 这三个值会随难度变大而减小.
+		 	var smallEnemyTimeGap = 1000,
+				middleEnemyTimeGap = 3000,
+				bigEnemyTimeGap = 2000; // 三种飞机分别出现的间隔时间,默认每一秒出现三架小飞机,每五秒出现两架中飞机,每十秒出现一架大飞机; 这三个值会随难度变大而减小.
 			var basespeed = 100; // 飞机的平均速度,在此基础上加随机数;这个值会随着难度变大而增大
 
 
@@ -217,13 +217,6 @@
 					"price": 99
 				},
 				{ 
-					"name" :"TP 飞毛腿 移动106 大容量移动电源 10400mAh" , 
-					"src" :  "QRcode/13.png",
-					"itemImg" : "item/13.png",
-					"activityprice" : 98,
-					"price": 149
-				},
-				{ 
 					"name" :"HYUNDAI 现代 H11 便携式插卡迷你音箱 老人FM收音机唱戏机 晨练散步外放MP3播放小音箱 蓝色" ,  
 					"src" : "QRcode/14.png",
 					"itemImg" : "item/14.png",
@@ -254,7 +247,7 @@
 			]
 
 			var QRcodeImg = new Image();
-				yixunGift = QRcode[parseInt(Math.random()*17)];
+				yixunGift = QRcode[parseInt(Math.random()*QRcode.length)];
 				QRcodeImg.src= yixunGift.itemImg;
 
 		    controller.loop(function(frame) {
@@ -307,6 +300,16 @@
 
 			
 			function animate(time){
+
+				if(direction === "right"){
+					for(var pt = 0; pt < plane.painter.cells.length ; pt++){
+						plane.painter.cells[pt].y = 133;
+					}
+				}else if(direction === "left"){
+					for(var pt = 0; pt < plane.painter.cells.length ; pt++){
+						plane.painter.cells[pt].y = 0;
+					}
+				}
 
 				if(time-smallEnemyTime>smallEnemyTimeGap){
 					sprites.push(createEnemy('roadblock',basespeed));
@@ -538,7 +541,7 @@
 				//再次调用绘制动画方法
 
 				if(gameover){
-					if(litterSuccess){
+					if(litterSuccess){		
 						bgsound.pause();
 						yixunSound.play();
 						context.rect( 0 , 0 , canvas.width , canvas.height);
